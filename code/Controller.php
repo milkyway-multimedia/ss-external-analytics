@@ -20,8 +20,8 @@ class Controller extends \Controller
 
 		if ($request && $request->isAjax()) {
 			return Director::ajax_response([
-				'site_start' => \Session::get('ga.site_start'),
-				'page_start' => \Session::get('ga.page_start'),
+				'site_start' => \Session::get('ea.site_start'),
+				'page_start' => \Session::get('ea.page_start'),
 			]);
 		}
 
@@ -29,6 +29,6 @@ class Controller extends \Controller
 	}
 
 	public function Link() {
-		return Director::absoluteURL((string)array_search(trim(__CLASS__, '\\'), \Config::inst()->forClass('Director')->rules));
+		return Director::absoluteURL('/' . (string)array_search(trim(__CLASS__, '\\'), \Config::inst()->forClass('Director')->rules));
 	}
 } 

@@ -20,6 +20,7 @@ class TimingsRequestFilter implements \RequestFilter {
 		}
 
 		$session->set('ea.page_start', time());
+		$session->save();
 	}
 
 	public function postRequest(\SS_HTTPRequest $request, \SS_HTTPResponse $response, \DataModel $model) {
