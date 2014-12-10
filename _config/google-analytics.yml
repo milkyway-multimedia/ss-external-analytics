@@ -1,0 +1,13 @@
+---
+Name: external-analytics--ga
+---
+ExternalAnalytics:
+  providers:
+    'ga': 'Milkyway\SS\ExternalAnalytics\Config\GoogleAnalytics'
+
+  ga_script_attributes:
+    - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Create'
+    - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Send'
+    - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Events'
+    - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Ecommerce'
+    - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Errors'

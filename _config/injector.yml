@@ -1,0 +1,20 @@
+---
+Name: external-analytics--injector
+---
+Injector:
+
+  'Milkyway\SS\ExternalAnalytics\Config\Contract':
+    class: 'Milkyway\SS\ExternalAnalytics\Config\GoogleAnalytics'
+
+  'GuzzleHttp\ClientInterface':
+    class: 'GuzzleHttp\Client'
+
+  'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAnalytics':
+    dependencies:
+      server: '%$GuzzleHttp\ClientInterface'
+      config: '%$Milkyway\SS\ExternalAnalytics\Config\GoogleAnalytics'
+
+  RequestProcessor:
+    properties:
+      filters:
+        - '%$Milkyway\SS\ExternalAnalytics\Api\TimingsRequestFilter'

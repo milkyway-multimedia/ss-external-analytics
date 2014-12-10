@@ -1,0 +1,15 @@
+---
+Name: external-analytics--extensions
+Only:
+  classexists: 'SiteConfig'
+---
+SiteConfig:
+  extensions:
+    - 'Milkyway\SS\ExternalAnalytics\Extensions\HasConfig'
+---
+Only:
+  moduleexists: 'cms'
+---
+ContentController:
+  extensions:
+    - 'Milkyway\SS\ExternalAnalytics\Extensions\IncludeJavascript'
