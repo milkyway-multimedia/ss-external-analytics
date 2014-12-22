@@ -10,7 +10,7 @@
 		"guzzlehttp/guzzle"          : "~4"
 	},
 	"extra"       : {
-		"installer-name" : "ext-analytics"
+		"installer-name" : "external-analytics"
 	},
 	"config"      : {
 		"process-timeout" : 600
