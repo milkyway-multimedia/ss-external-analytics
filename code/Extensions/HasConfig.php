@@ -56,14 +56,21 @@ class HasConfig extends \DataExtension
 
 			$dbFields = [];
 			foreach($config->db() as $field => $type)
-				$dbFields[] = ucfirst($config->prefix()) . '_' . $field;
+				$dbFields[$field] = ucfirst($config->prefix()) . '_' . $field;
 
 			$providers[$prefix] = $self->scaffoldFormFields([
-				'includeRelations' => $self->exists(),
-				'tabbed' => true,
+				'includeRelations' => false,
+				'tabbed' => false,
 				'ajaxSafe' => true,
-				'restrictFields' => $dbFields,
+				'restrictFields' => array_values($dbFields),
 			]);
+
+			$providerFormFields = $providers[$prefix]->dataFields();
+
+			foreach($dbFields as $field => $dbField) {
+				if(isset($providerFormFields[$dbField]) && ($providerFormFields[$dbField] instanceof \FormField))
+					$providerFormFields[$dbField]->setAttribute('placeholder', Utilities::env_value($field));
+			}
 		});
 
 		if(count($providers) > 1) {
@@ -82,5 +89,19 @@ class HasConfig extends \DataExtension
 		elseif(count($providers)) {
 			$fields->addFieldsToTab('Root.' . $this->tab, array_pop($providers));
 		}
+	}
+
+	public function updateFieldLabels(&$labels) {
+		Utilities::execute_on_provider_list(function($config, $prefix) use (&$labels) {
+			if(count((array)$config->db())) {
+				foreach($config->db() as $field => $type) {
+					$labelField = ucfirst($config->prefix()) . '_' . $field;
+
+					if(isset($labels[$labelField]) && strpos($labels[$labelField], ucfirst($config->prefix() . '_')) === 0) {
+						$labels[$labelField] = isset($labels[$field]) ? $labels[$field] : substr($labels[$labelField], strlen($config->prefix() . '_'));
+					}
+				}
+			}
+		});
 	}
 }
