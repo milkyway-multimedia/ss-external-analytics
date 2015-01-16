@@ -104,4 +104,8 @@ class HasConfig extends \DataExtension
 			}
 		});
 	}
+
+    public function getGoogleAnalyticsTrackingID() {
+        return Utilities::env_value('TrackingId', $this->owner);
+    }
 }
