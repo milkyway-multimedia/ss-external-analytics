@@ -9,5 +9,6 @@ ExternalAnalytics:
     - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Create'
     - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Send'
     - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Events'
+    - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\SocialInteractions'
     - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Ecommerce'
     - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Errors'
