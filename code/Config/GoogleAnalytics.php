@@ -27,6 +27,7 @@ class GoogleAnalytics implements Contract {
 	{
 		return [
 			'TrackingId'               => 'Varchar(255)',
+			'ApiClientId'               => 'Varchar(255)',
 		];
 	}
 
@@ -34,6 +35,8 @@ class GoogleAnalytics implements Contract {
 	{
 		return [
 			'TrackingId'               => 'tracking_id',
+			'ApiClientId'               => 'api_client_id',
+			'ReportsAccountId'               => 'reports_account_id',
 		];
 	}
 

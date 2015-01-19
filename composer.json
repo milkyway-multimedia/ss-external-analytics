@@ -9,6 +9,9 @@
 		"milkyway-multimedia/ss-mwm" : "dev-master",
 		"guzzlehttp/guzzle"          : "~4"
 	},
+    "suggested"       : {
+        "milkyway-multimedia/ss-external-analytics-reports" : "Reports for supported interfaces (Google Analytics)"
+    },
 	"extra"       : {
 		"installer-name" : "external-analytics"
 	},
