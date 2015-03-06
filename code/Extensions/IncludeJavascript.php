@@ -12,7 +12,7 @@ namespace Milkyway\SS\ExternalAnalytics\Extensions;
 use Milkyway\SS\ExternalAnalytics\Utilities;
 use Requirements;
 
-class IncludeJavascript extends \Extension {
+class IncludeJavascript extends \Extension implements \Flushable {
 	protected $cache;
 
 	public function onAfterInit() {
@@ -56,7 +56,11 @@ class IncludeJavascript extends \Extension {
 		return count($output) ? trim(implode("\n", $output)) : '';
 	}
 
-	protected function cache() {
+	public static function flush() {
+		singleton(__CLASS__)->cache()->clean();
+	}
+
+	public function cache() {
 		if(!$this->cache)
 			$this->cache = \SS_Cache::factory('Milkyway_SS_ExternalAnalytics_Extensions_IncludeJavascript', 'Output', ['lifetime' => 20000 * 60 * 60]);
 

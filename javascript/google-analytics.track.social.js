@@ -63,12 +63,23 @@ gaTracker.extractParamFromUri = function(uri, paramName) {
 	return '';
 };
 
-gaTracker.fb('edge.create', 'like');
-gaTracker.fb('edge.remove', 'unlike');
-gaTracker.fb('message.send', 'share');
-gaTracker.fb('comment.create', 'comment');
-gaTracker.fb('comment.remove', 'deleted comment');
+gaTracker.addSocialEvents = function() {
+    gaTracker.fb('edge.create', 'like');
+    gaTracker.fb('edge.remove', 'unlike');
+    gaTracker.fb('message.send', 'share');
+    gaTracker.fb('comment.create', 'comment');
+    gaTracker.fb('comment.remove', 'deleted comment');
 
-gaTracker.fb('tweet', 'tweet');
-gaTracker.fb('follow', 'follow');
-gaTracker.fb('favorite', 'favourite');
+    gaTracker.fb('tweet', 'tweet');
+    gaTracker.fb('follow', 'follow');
+    gaTracker.fb('favorite', 'favourite');
+};
+
+gaTracker.addSocialEvents();
+
+if(typeof window.attachToEvent === "function") {
+    window.attachToEvent(window, "mwm::loaded:js", gaTracker.addSocialEvents);
+}
+else if (window.jQuery) {
+    window.jQuery(window).on("mwm::loaded:js", gaTracker.addSocialEvents);
+}
