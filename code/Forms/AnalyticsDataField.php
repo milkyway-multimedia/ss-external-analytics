@@ -16,7 +16,7 @@ class AnalyticsDataField extends FormField {
 
 	function Field($properties = []) {
 		Requirements::javascript(THIRDPARTY_DIR . '/thirdparty/jquery/jquery.min.js');
-		Requirements::javascript(SS_GOOGLE_ANALYTICS_DIR . '/javascript/analyticsdatafield.js');
+		Requirements::javascript(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/analyticsdatafield.js');
 
 		$this->setAttribute('data-field', $this->Name);
 
