@@ -20,7 +20,7 @@ class Create implements Contract {
 
 			$create = count($create) ? ', ' . json_encode(array_filter($create)) : '';
 
-			return '__' . $prefix . "('create', '$trackingId'{$create});";
+			return $prefix . "('create', '$trackingId'{$create});";
 		}
 
 		return '';

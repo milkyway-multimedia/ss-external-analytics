@@ -11,9 +11,18 @@ namespace Milkyway\SS\ExternalAnalytics\Config;
 
 use Milkyway\SS\Utilities;
 use ArrayData;
+use SSViewer;
+use Member;
+use RandomGenerator;
+use Cookie;
+use Permission;
 
 class GoogleAnalytics implements Contract {
-	protected $template = 'IncludeJavascript_GoogleAnalytics';
+	protected $template;
+
+	public function __construct($template = '') {
+		$this->teplate = $template;
+	}
 
 	public function i18n_title() {
 		return _t('ExternalAnalytics.GOOGLE_ANALYTICS', 'Google Analytics');
@@ -41,24 +50,46 @@ class GoogleAnalytics implements Contract {
 	}
 
 	public function findClientId() {
-		if(\Member::currentUserID()) return \Member::currentUserID();
+		if(Member::currentUserID()) return Member::currentUserID();
 		if(headers_sent()) return false;
 
-		$cid = \Cookie::get('__' .  $this->prefix() . '_cid');
+		$cid = Cookie::get($this->prefix() . '_cid');
 
 		if(!$cid) {
-			$generator = new \RandomGenerator();
+			$generator = new RandomGenerator();
 			$cid = $generator->randomToken();
 			$cid = substr($cid, 0, 77);
 		}
 
-		Utilities::set_cookie('__' .  $this->prefix() . '_cid', $cid, 730);
+		Utilities::set_cookie($this->prefix() . '_cid', $cid, 730);
 
 		return $cid;
 	}
 
 	public function javascript($controller, $params = []) {
 		$params = array_merge(['TrackingId' => \Milkyway\SS\ExternalAnalytics\Utilities::env_value('TrackingId', $controller, $this)], $params);
-		return isset($params['TrackingId']) ? ArrayData::create($params)->renderWith($this->template) : '';
+
+		if(!$params['TrackingId'])
+			return '';
+
+		if(!$this->template) {
+			$this->template = singleton('env')->get('GoogleAnalytics.javascript_template', [$this], BASE_PATH . '/' . SS_EXTERNAL_ANALYTICS_DIR . '/javascript/' . 'google-analytics.track.init.ss.js');
+		}
+
+		if($this->template && !is_array($this->template) && substr($this->template, -3) !== '.ss') {
+			if(isset($_GET['showtemplate']) && $_GET['showtemplate'] && Permission::check('ADMIN')) {
+				$lines = file($this->template);
+				echo "<h2>Template: $this->template</h2>";
+				echo "<pre>";
+				foreach($lines as $num => $line) {
+					echo str_pad($num+1,5) . htmlentities($line, ENT_COMPAT, 'UTF-8');
+				}
+				echo "</pre>";
+			}
+
+			return SSViewer::execute_string(file_get_contents($this->template), ArrayData::create($params));
+		}
+		else
+			return ArrayData::create($params)->renderWith($this->template);
 	}
 } 

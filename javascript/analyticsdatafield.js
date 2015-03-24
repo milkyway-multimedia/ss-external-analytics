@@ -1,95 +1,97 @@
-;(function($) {
-	var analyticsDataField = window.analyticsDataField || {},
-		gaVars = window.gaVars || {};
+var EA = window.EA || {};
 
-	analyticsDataField.parseSelector = '.analyticsdata-parser';
+EA.dataField = (function(dataField, $) {
+	if(!dataField.hasOwnProperty('parseSelector'))
+		dataField.parseSelector = '.analyticsdata-parser';
 
-	analyticsDataField.outputGaTracker = function(t) {
-		if(!t) return;
+	dataField.outputGaTracker = function(tracker) {
+		if(!tracker) return;
 
-		var $fields = $(this.parseSelector).not('processed'),
+		var $fields = $(dataField.parseSelector).not('.analyticsdata-parser_processed'),
 			that = this;
 
 		if($fields.length) {
 			$fields.each(function() {
-				var $me = $(this),
+				var $this = $(this),
 					id = this.id,
-					field = $me.data('field'),
-					restrictTo = $me.data('restrictTo'),
-					tName = t.get('name'),
+					field = $this.data('field'),
+					restrictTo = $this.data('restrictTo'),
+					trackerName = tracker.get('name'),
 					output = [];
 
-				$me.addClass('processed');
+				$this.removeClass('analyticsdata-parser_processing processing')
+					.addClass('analyticsdata-parser_processed processed');
 
-				if(!field || (restrictTo && tName != restrictTo)) return true;
+				if(!field || (restrictTo && trackerName != restrictTo)) return true;
 
-				if(t.get('referrer'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'referrer', t.get('referrer')));
-				if(t.get('campaignName'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'campaignName', t.get('campaignName')));
-				if(t.get('campaignSource'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'campaignSource', t.get('campaignSource')));
-				if(t.get('campaignMedium'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'campaignMedium', t.get('campaignMedium')));
-				if(t.get('campaignKeyword'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'campaignKeyword', t.get('campaignKeyword')));
-				if(t.get('campaignContent'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'campaignContent', t.get('campaignContent')));
-				if(t.get('campaignId'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'campaignId', t.get('campaignId')));
+				var types = dataField.types || {};
 
-				if(t.get('screenResolution'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'screenResolution', t.get('screenResolution')));
-				if(t.get('viewportSize'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'browserSize', t.get('viewportSize')));
-				if(t.get('screenColors'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'screenColors', t.get('screenColors')));
-				if(t.get('encoding'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'encoding', t.get('encoding')));
-				if(t.get('language'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'language', t.get('language')));
-				if(t.get('javaEnabled'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'javaEnabled', t.get('javaEnabled')));
-				if(t.get('flashVersion'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'flashVersion', t.get('flashVersion')));
+				types = $.extend({}, {
+					'referrer': 'referrer',
+					'dataSource': 'dataSource',
+					'expId': 'experimentId',
+					'expVar': 'experimentVariant',
+					'campaignName': 'campaignName',
+					'campaignSource': 'campaignSource',
+					'campaignMedium': 'campaignMedium',
+					'campaignKeyword': 'campaignKeyword',
+					'campaignContent': 'campaignContent',
+					'campaignId': 'campaignId',
 
-				if(t.get('location'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'pageLocation', t.get('location')));
-				if(t.get('hostname'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'domain', t.get('hostname')));
-				if(t.get('documentPath'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'pagePath', t.get('documentPath')));
-				if(t.get('title'))
-					output.push(that.createGaTrackerInput(id, field, tName, 'pageTitle', t.get('title')));
+					'screenResolution': 'screenResolution',
+					'viewportSize': 'windowSize',
+					'screenColors': 'screenColours',
+					'encoding': 'encoding',
+					'language': 'language',
+					'javaEnabled': 'javaEnabled',
+					'flashVersion': 'flashVersion',
 
-				output.push(that.createGaTrackerInput(id, field, tName, 'pageSession', +new Date()));
+					'appName': 'applicationName',
+					'appId': 'applicationId',
+					'appVersion': 'applicationVersion',
+					'appInstallerId': 'applicationInstallerId',
+
+					'location': 'pageLocation',
+					'hostname': 'domain',
+					'documentPath': 'pagePath',
+					'title': 'pageTitle'
+				}, types);
+
+				for(var type in types) {
+					if(types.hasOwnProperty(type) && tracker.get(type))
+						output.push(that.createGaTrackerInput(id, field, trackerName, types[type], tracker.get(type)));
+				}
+
+				output.push(that.createGaTrackerInput(id, field, trackerName, 'pageSession', +new Date()));
 
 				if(output.length)
-					$me.append(output.join("\n"));
+					$this.append(output.join("\n"));
 
 				return true;
 			});
 		}
 	};
 
-	analyticsDataField.createGaTrackerInput = function(id, field, tName, name, val) {
+	dataField.createGaTrackerInput = function(id, field, tName, name, val) {
 		return '<input type="hidden" id="' + id + '-' + field.replace(/\[\]/g, '-') + '-' + tName + '-' + name + '" name="' + field + '[' + tName + ']' + '[' + name + ']' + '" value="' + val + '" />';
 	};
 
-	if(gaVars) {
-		var that = window.analyticsDataField;
+	if(EA.hasOwnProperty('GA') && EA.GA.hasOwnProperty('trackers')) {
+		for (var trackerName in EA.GA.trackers) {
+			if (EA.GA.trackers.hasOwnProperty(trackerName)) {
+				EA.GA.trackers[trackerName].initCallbacks = EA.GA.trackers[trackerName].initCallbacks || {};
 
-		for (var key in gaVars) {
-			if (gaVars.hasOwnProperty(key) && gaVars[key].variable) {
-				var trackers = window[gaVars[key].variable].getAll();
+				EA.GA.trackers[trackerName].initCallbacks.parseFields = function(trackers) {
+					if(!trackers || !trackers.length)
+						return;
 
-				if(trackers.length) {
-					for (var i=0; i < trackers.length; ++i) {
-						that.outputGaTracker(trackers[i]);
+					for (var i = 0; i < trackers.length; ++i) {
+						dataField.outputGaTracker(trackers[i]);
 					}
-				}
+				};
 			}
 		}
 	}
 
-})(jQuery);
+	return dataField;
+})(EA.dataField || {}, jQuery);

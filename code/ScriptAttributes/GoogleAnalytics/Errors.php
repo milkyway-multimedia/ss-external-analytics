@@ -22,7 +22,7 @@ class Errors implements Contract {
 
 		if($errorCode) {
 			$settings = '{ exDescription: \'' . _t('ErrorPage.' . $errorCode, $errorCode) . '\'}';
-			return '__' . $prefix . "('send', 'exception', {$settings});\n";
+			return $prefix . "('send', 'exception', {$settings});\n";
 		}
 
 		return '';

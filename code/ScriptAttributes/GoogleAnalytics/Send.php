@@ -19,13 +19,13 @@ class Send implements Contract {
 		if($send && is_array($send)) {
 			foreach($send as $type => $options) {
 				if(is_numeric($type))
-					$output[] = '__' . $prefix . "('send', '$options');";
+					$output[] = $prefix . "('send', '$options');";
 				else
-					$output[] = '__' . $prefix . "('send', " . json_encode(array_merge(['hitType' => $type], $options)) . ");";
+					$output[] = $prefix . "('send', " . json_encode(array_merge(['hitType' => $type], $options)) . ");";
 			}
 		}
 		else
-			$output[] = '__' . $prefix . "('send', 'pageview');";
+			$output[] = $prefix . "('send', 'pageview');";
 
 		return trim(implode("\n", $output));
 	}

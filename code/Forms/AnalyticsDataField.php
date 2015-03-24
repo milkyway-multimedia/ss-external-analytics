@@ -20,7 +20,7 @@ class AnalyticsDataField extends FormField {
 
 		$this->setAttribute('data-field', $this->Name);
 
-		return parent::Field($properties);
+		return '';
 	}
 
 	function dataValue() {

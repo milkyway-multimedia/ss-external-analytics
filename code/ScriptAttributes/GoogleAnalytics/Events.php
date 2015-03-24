@@ -31,7 +31,7 @@ class Events implements Contract {
 
 				$settings = json_encode($settings);
 
-				$output[] = '__' . $prefix . "('send', {$settings});";
+				$output[] = $prefix . "('send', {$settings});";
 			}
 		}
 

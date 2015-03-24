@@ -14,7 +14,7 @@ use Milkyway\SS\ExternalAnalytics\ScriptAttributes\Contract;
 class Ecommerce implements Contract {
 	public function output($controller, $params = [], \Milkyway\SS\ExternalAnalytics\Config\Contract $config = null, $prefix = '') {
 		if(isset($params['ecommerce']) && $params['ecommerce'])
-			return '__' . $prefix. "('require', 'ecommerce', 'ecommerce.js');\n";
+			return $prefix. "('require', 'ecommerce', 'ecommerce.js');\n";
 
 		return '';
 	}

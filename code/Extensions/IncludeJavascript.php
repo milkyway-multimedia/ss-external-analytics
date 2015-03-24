@@ -25,7 +25,7 @@ class IncludeJavascript extends \Extension implements \Flushable {
 			$cacheKey = $this->obtainCacheKey(['url' => $request ? $request->getUrl(true) : '?', 'config' => get_class($config), 'prefix' => $prefix . '-script',]);
 
 			if(\Director::isDev() || ($request && !\Director::isDev() && !($script = $this->cache()->load($cacheKey)))) {
-				if($script = $config->javascript($self->owner, ['Var' => '__' . $prefix, 'SessionLink' => $sessionLink, 'Attributes' => $this->analyticAttributes(array_merge((array)Utilities::env_value('attributes', null, $config), (array)Utilities::env_value('attributes', $self->owner, $config)), $config, $prefix)])) {
+				if($script = $config->javascript($self->owner, ['Var' =>  $prefix, 'SessionLink' => $sessionLink, 'Attributes' => $this->analyticAttributes(array_merge((array)Utilities::env_value('attributes', null, $config), (array)Utilities::env_value('attributes', $self->owner, $config)), $config, $prefix)])) {
 					if($request && !\Director::isDev()) {
 						require_once(THIRDPARTY_PATH . DIRECTORY_SEPARATOR .'jsmin' . DIRECTORY_SEPARATOR . 'jsmin.php');
 						increase_time_limit_to();
