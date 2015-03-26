@@ -94,4 +94,4 @@ EA.dataField = (function(dataField, $) {
 	}
 
 	return dataField;
-})(EA.dataField || {}, jQuery);
+})(EA.dataField || {}, window.jQuery);
