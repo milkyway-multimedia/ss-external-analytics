@@ -1,0 +1,8 @@
+---
+Name: external-analytics--listeners
+---
+Eventful:
+  listeners:
+    'ea:event.ea:default':
+      - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAnalytics'
+      - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaMailchimpGoals'

@@ -1,8 +1,0 @@
----
-Name: external-analytics--events
----
-EventDispatcher:
-  listeners:
-    analytics:
-      'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAnalytics':
-        events: ['event']

@@ -1,14 +1,14 @@
 var EA = window.EA || { GA: {} };
 
 if(EA.GA.hasOwnProperty('trackers')) {
-    EA.GA.social = (function (social) {
+    EA.GA.social = (function (social, ea, mwm) {
         social.fb = function (event, action) {
             try {
                 if (window.FB && window.FB.Event && window.FB.Event.subscribe) {
                     FB.Event.subscribe(event, function (targetUrl) {
-                        for (var key in EA_GA.trackers) {
-                            if (EA_GA.trackers.hasOwnProperty(key)) {
-                                EA_GA.trackers[key].sendEvent({
+                        for (var key in ea.GA.trackers) {
+                            if (ea.GA.trackers.hasOwnProperty(key)) {
+                                ea.GA.trackers[key].sendEvent({
                                     hitType:       'social',
                                     socialNetwork: 'facebook',
                                     socialAction:  action,
@@ -36,9 +36,9 @@ if(EA.GA.hasOwnProperty('trackers')) {
                                 if (event.data && event.data.user_id)
                                     action = action + ' (@' + event.data.user_id + ')';
 
-                                for (var key in EA_GA.trackers) {
-                                    if (EA_GA.trackers.hasOwnProperty(key)) {
-                                        EA_GA.trackers[key].sendEvent({
+                                for (var key in ea.GA.trackers) {
+                                    if (ea.GA.trackers.hasOwnProperty(key)) {
+                                        ea.GA.trackers[key].sendEvent({
                                             hitType:       'social',
                                             socialNetwork: 'twitter',
                                             socialAction:  action,
@@ -64,7 +64,7 @@ if(EA.GA.hasOwnProperty('trackers')) {
             return '';
         };
 
-        social.addSocialEvents = function () {
+        social.init = function () {
             social.fb('edge.create', 'like');
             social.fb('edge.remove', 'unlike');
             social.fb('message.send', 'share');
@@ -76,15 +76,10 @@ if(EA.GA.hasOwnProperty('trackers')) {
             social.fb('favorite', 'favourite');
         };
 
-        social.addSocialEvents();
+        social.init();
 
-        if (typeof window.attachToEvent === "function") {
-            window.attachToEvent(window, "mwm::loaded:js", social.addSocialEvents);
-        }
-        else if (window.jQuery) {
-            window.jQuery(window).on("mwm::loaded:js", social.addSocialEvents);
-        }
+        mwm.utilities.attachToEvent(window, "mwm::loaded:js", social.init);
 
         return social;
-    }(EA.GA.social || {}));
+    }(EA.GA.social || {}, EA || {}, mwm || {}));
 }

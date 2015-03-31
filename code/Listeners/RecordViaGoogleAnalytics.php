@@ -9,45 +9,57 @@
 
 namespace Milkyway\SS\ExternalAnalytics\Listeners;
 
-use Debug;
+use League\Event\EventInterface as Event;
 use Milkyway\SS\ExternalAnalytics\Utilities;
-use SS_HTTPResponse;
+use Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Driver;
 
-class RecordViaGoogleAnalytics
+class RecordViaGoogleAnalytics extends HttpListener
 {
 	const VERSION = 1;
 
 	/* @var string */
 	public $url = 'https://ssl.google-analytics.com/collect';
 
-	/* @var \GuzzleHttp\ClientInterface */
-	public $server;
+	protected $mapping = [
+		'version' => 'v',
+		'tracking_id' => 'tid',
+		'client_id' => 'cid',
 
-	/* @var \Milkyway\SS\ExternalAnalytics\Config\GoogleAnalytics */
-	public $config;
+		'category' => 'ec',
+		'action' => 'ea',
+		'label' => 'el',
+		'value' => 'ev',
+	];
 
-	public function event($params = [])
+	public function event(Event $e, $queueName, $params = [])
 	{
-		return $this->request(array_merge([
-			'v'   => static::VERSION,
-			'tid' => Utilities::env_value('TrackingId', null, $this->config),
-			'cid' => $this->config->findClientId(),
-			't'   => 'pageview',
-		], $params));
-	}
+		$results = [];
 
-	protected function request($params = [])
-	{
-		$response = $this->server->post(
-			$this->url,
-			$params
-		);
+		singleton('ea')->executeDrivers(function($driver, $id) use(&$results, $queueName, $params) {
+			if(isset($params['id']) && $params['id'] != $id)
+				return;
 
-		$isError = (new SS_HTTPResponse($response->getBody()->getContents(), $response->getStatusCode(), $response->getReasonPhrase()))->isError();
+			if(($driver instanceof Driver) && $tid = $driver->setting($id, 'TrackingId')) {
+				foreach($params as $type => $value) {
+					if(isset($this->mapping[$type])) {
+						$params[$this->mapping[$type]] = $value;
+						unset($params[$type]);
+					}
+				}
 
-		if($isError)
-			Debug::message(sprintf('Action with url: %s came back with status code: %s', $response->getEffectiveUrl(), $response->getStatusCode()));
+				$event = isset($params['event']) ? $params['event'] : $queueName;
 
-		return !$isError;
+				$results[] = $this->request([
+					'query' => array_merge([
+						'v'   => static::VERSION,
+						'tid' => $tid,
+						'cid' => $driver->session_user_id($id),
+						't'   => $event ?: 'pageview',
+					], $params)
+				]);
+			}
+		});
+
+		return $results;
 	}
 } 

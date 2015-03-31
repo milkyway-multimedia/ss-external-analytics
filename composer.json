@@ -1,21 +1,30 @@
 {
-	"name"        : "milkyway-multimedia/ss-external-analytics",
-	"description" : "Simple analytics integration into Silverstripe",
-	"type"        : "silverstripe-module",
-	"keywords"    : ["Google", "Analytics", "Google Analytics", "statistics", "silverstripe", "segment.io"],
-	"license"     : "MIT",
-	"require"     : {
-		"silverstripe/framework"     : "~3.1",
-		"milkyway-multimedia/ss-mwm" : "dev-master",
-		"guzzlehttp/guzzle"          : "~4"
-	},
-    "suggested"       : {
-        "milkyway-multimedia/ss-external-analytics-reports" : "Reports for supported interfaces (Google Analytics)"
-    },
-	"extra"       : {
-		"installer-name" : "external-analytics"
-	},
-	"config"      : {
-		"process-timeout" : 600
-	}
+  "name": "milkyway-multimedia/ss-external-analytics",
+  "description": "Simple analytics integration into Silverstripe",
+  "type": "silverstripe-module",
+  "keywords": [
+    "Google",
+    "Analytics",
+    "Google Analytics",
+    "statistics",
+    "silverstripe",
+    "Mailchimp"
+  ],
+  "license": "MIT",
+  "require": {
+    "silverstripe/framework": "~3.1",
+    "milkyway-multimedia/ss-mwm": "dev-master",
+    "guzzlehttp/guzzle": "~4",
+    "milkyway-multimedia/ss-eventful": "dev-master"
+
+  },
+  "suggested": {
+    "milkyway-multimedia/ss-external-analytics-reports": "Reports for supported interfaces (Google Analytics)"
+  },
+  "extra": {
+    "installer-name": "external-analytics"
+  },
+  "config": {
+    "process-timeout": 600
+  }
 }

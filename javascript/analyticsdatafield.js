@@ -1,79 +1,89 @@
 var EA = window.EA || {};
 
 EA.dataField = (function(dataField, $) {
+	var $inputs = [],
+		$done = [];
+
 	if(!dataField.hasOwnProperty('parseSelector'))
 		dataField.parseSelector = '.analyticsdata-parser';
 
-	dataField.outputGaTracker = function(tracker) {
-		if(!tracker) return;
-
-		var $fields = $(dataField.parseSelector).not('.analyticsdata-parser_processed'),
-			that = this;
+	dataField.render = function(name) {
+		var $fields = $(dataField.parseSelector).not('.analyticsdata-parser_processed_' + name);
 
 		if($fields.length) {
 			$fields.each(function() {
 				var $this = $(this),
 					id = this.id,
 					field = $this.data('field'),
-					restrictTo = $this.data('restrictTo'),
-					trackerName = tracker.get('name'),
-					output = [];
+					restrictTo = $this.data('restrictTo');
 
-				$this.removeClass('analyticsdata-parser_processing processing')
-					.addClass('analyticsdata-parser_processed processed');
+				if(!field || (restrictTo && name != restrictTo) || $done.indexOf(name) !== -1)
+					return true;
 
-				if(!field || (restrictTo && trackerName != restrictTo)) return true;
+				$this.removeClass('analyticsdata-parser_processing_' + name)
+					.addClass('analyticsdata-parser_processed_' + name);
 
-				var types = dataField.types || {};
-
-				types = $.extend({}, {
-					'referrer': 'referrer',
-					'dataSource': 'dataSource',
-					'expId': 'experimentId',
-					'expVar': 'experimentVariant',
-					'campaignName': 'campaignName',
-					'campaignSource': 'campaignSource',
-					'campaignMedium': 'campaignMedium',
-					'campaignKeyword': 'campaignKeyword',
-					'campaignContent': 'campaignContent',
-					'campaignId': 'campaignId',
-
-					'screenResolution': 'screenResolution',
-					'viewportSize': 'windowSize',
-					'screenColors': 'screenColours',
-					'encoding': 'encoding',
-					'language': 'language',
-					'javaEnabled': 'javaEnabled',
-					'flashVersion': 'flashVersion',
-
-					'appName': 'applicationName',
-					'appId': 'applicationId',
-					'appVersion': 'applicationVersion',
-					'appInstallerId': 'applicationInstallerId',
-
-					'location': 'pageLocation',
-					'hostname': 'domain',
-					'documentPath': 'pagePath',
-					'title': 'pageTitle'
-				}, types);
-
-				for(var type in types) {
-					if(types.hasOwnProperty(type) && tracker.get(type))
-						output.push(that.createGaTrackerInput(id, field, trackerName, types[type], tracker.get(type)));
+				if($inputs.length) {
+					for(var i=0;i<$inputs.length;i++) {
+						$this.append(dataField.createTrackerInput(id, field, $inputs[i][0], $inputs[i][1]));
+					}
 				}
 
-				output.push(that.createGaTrackerInput(id, field, trackerName, 'pageSession', +new Date()));
-
-				if(output.length)
-					$this.append(output.join("\n"));
+				$inputs = [];
+				$done.push(name);
 
 				return true;
 			});
 		}
 	};
 
-	dataField.createGaTrackerInput = function(id, field, tName, name, val) {
-		return '<input type="hidden" id="' + id + '-' + field.replace(/\[\]/g, '-') + '-' + tName + '-' + name + '" name="' + field + '[' + tName + ']' + '[' + name + ']' + '" value="' + val + '" />';
+	dataField.outputGaTracker = function(tracker) {
+		if(!tracker) return;
+
+		var types = dataField.GA_types || {},
+			trackerName = tracker.get('name');
+
+		types = $.extend({}, {
+			'referrer': 'referrer',
+			'dataSource': 'dataSource',
+			'expId': 'experimentId',
+			'expVar': 'experimentVariant',
+			'campaignName': 'campaignName',
+			'campaignSource': 'campaignSource',
+			'campaignMedium': 'campaignMedium',
+			'campaignKeyword': 'campaignKeyword',
+			'campaignContent': 'campaignContent',
+			'campaignId': 'campaignId',
+
+			'screenResolution': 'screenResolution',
+			'viewportSize': 'windowSize',
+			'screenColors': 'screenColours',
+			'encoding': 'encoding',
+			'language': 'language',
+			'javaEnabled': 'javaEnabled',
+			'flashVersion': 'flashVersion',
+
+			'appName': 'applicationName',
+			'appId': 'applicationId',
+			'appVersion': 'applicationVersion',
+			'appInstallerId': 'applicationInstallerId',
+
+			'location': 'pageLocation',
+			'hostname': 'domain',
+			'documentPath': 'pagePath',
+			'title': 'pageTitle'
+		}, types);
+
+		for(var type in types) {
+			if(types.hasOwnProperty(type) && tracker.get(type))
+				$inputs.push([[trackerName, types[type]], tracker.get(type)]);
+		}
+
+		dataField.render(trackerName);
+	};
+
+	dataField.createTrackerInput = function(id, field, name, val) {
+		return '<input type="hidden" id="' + id + '-' + field.replace(/\[\]/g, '-') + '-' + name.join('-') + '" name="' + field + '[' + name.join('][') + ']' + '" value="' + val + '" />';
 	};
 
 	if(EA.hasOwnProperty('GA') && EA.GA.hasOwnProperty('trackers')) {
@@ -92,6 +102,9 @@ EA.dataField = (function(dataField, $) {
 			}
 		}
 	}
+
+	$inputs.push([['pageSession'], +new Date()]);
+	dataField.render('+defaults');
 
 	return dataField;
 })(EA.dataField || {}, window.jQuery);

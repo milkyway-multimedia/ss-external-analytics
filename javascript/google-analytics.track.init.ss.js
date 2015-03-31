@@ -42,26 +42,10 @@ EA.GA.trackers = (function (_{$Var}) {
         }
 
         <% if $SessionLink %>
-            if(window.JSON) {
-                var xhr, response;
-
-                if (window.XMLHttpRequest)
-                    xhr = new XMLHttpRequest();
-                else
-                    xhr = new ActiveXObject('Microsoft.XMLHTTP');
-
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState == 4 && xhr.status == 200) {
-                        response = JSON.parse(xhr.responseText);
-                        _{$Var}['{$Var}'].site_start = response.data.site_start;
-                        _{$Var}['{$Var}'].page_start = response.data.page_start;
-                    }
-                }
-
-                xhr.open('GET', '$SessionLink', true);
-                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                xhr.send();
-            }
+            mwm.utilities.requestViaAjax('$SessionLink', 'JSON', function(response) {
+                _{$Var}['{$Var}'].site_start = response.data.site_start;
+                _{$Var}['{$Var}'].page_start = response.data.page_start;
+            });
         <% end_if %>
     });
 

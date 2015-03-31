@@ -1,0 +1,8 @@
+---
+Name: external-analytics--userforms
+Only:
+  moduleexists: 'userforms'
+---
+UserDefinedForm_Controller:
+  extensions:
+    - 'Milkyway\SS\ExternalAnalytics\Modules\Userforms\AttachEventsOnFormSubmission'

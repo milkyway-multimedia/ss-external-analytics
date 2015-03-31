@@ -2,13 +2,30 @@
 Name: external-analytics--ga
 ---
 ExternalAnalytics:
-  providers:
-    'ga': 'Milkyway\SS\ExternalAnalytics\Config\GoogleAnalytics'
+  enabled:
+    ga:
+      driver: 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Driver'
+      attributes:
+        - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Create'
+        - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Ecommerce'
+        - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Events'
+        - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\SocialInteractions'
+        - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Errors'
+        - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Send'
 
-  ga_script_attributes:
-    - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Create'
-    - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Send'
-    - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Events'
-    - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\SocialInteractions'
-    - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Ecommerce'
-    - 'Milkyway\SS\ExternalAnalytics\ScriptAttributes\GoogleAnalytics\Errors'
+  get_vars_to_session:
+    'ga.utm_campaign':
+      get_var: 'utm_campaign'
+      title: 'campaignName'
+    'ga.utm_source':
+      get_var: 'utm_source'
+      title: 'campaignSource'
+    'ga.utm_medium':
+      get_var: 'utm_medium'
+      title: 'campaignMedium'
+    'ga.utm_term':
+      get_var: 'utm_term'
+      title: 'campaignKeywords'
+    'ga.utm_content':
+      get_var: 'utm_content'
+      title: 'campaignContent'

@@ -33,16 +33,21 @@ class AnalyticsDataField extends FormField {
 			$sessionNice = DBField::create_field('SS_Datetime', $session);
 
 			foreach($stats as $type => $data) {
-				if(is_array($data)) {
-					$stats[$type]['siteVisitStarted'] = $sessionNice->Nice();
-					$stats[$type]['timeOnSite'] = $sessionNice->TimeDiff();
-				}
-				else {
-					$stats['siteVisitStarted'] = $sessionNice->Nice();
-					$stats['timeOnSite'] = $sessionNice->TimeDiff();
-				}
+				$stats['siteVisitStarted'] = $sessionNice->Nice();
+				$stats['timeOnSite'] = $sessionNice->TimeDiff();
 			}
 		}
+
+		$getVarsToSession = singleton('env')->get('ExternalAnalytics.get_vars_to_session');
+
+		array_walk($getVarsToSession, function($options, $sessionVar) use(&$stats) {
+			if($value = Session::get($sessionVar)) {
+				$getVar = isset($options['get_var']) ? $options['get_var'] : $sessionVar;
+				$title = isset($options['title']) ? $options['title'] : $getVar;
+
+				$stats[$title] = $value;
+			}
+		});
 
 		if($this->serialiseOnSave) {
 			return Convert::array2json($stats);
@@ -53,16 +58,8 @@ class AnalyticsDataField extends FormField {
 			foreach($stats as $type => $data) {
 				if(is_array($data)) {
 					foreach($data as $name => $val) {
-						if($name == 'pageSession') {
-							$pageSession = DBField::create_field('SS_Datetime', $val / 1000);
-
-							$output[] = _t('AnalyticsDataField.PAGE_ENTERED', 'Page entered') . ': ' . $pageSession->Nice();
-							$output[] = _t('AnalyticsDataField.TIME_ON_PAGE', 'Time on page') . ': ' . $pageSession->TimeDiff();
-						}
-						else {
-							$name = str_replace('-', ' ', $name);
-							$output[] = _t('AnalyticsDataField.' . str_replace(' ', '_', strtoupper($name)), ucfirst($this->name_to_label($name))) . ': ' . $val;
-						}
+						$name = str_replace('-', ' ', $name);
+						$output[] = _t('AnalyticsDataField.' . str_replace(' ', '_', strtoupper($name)), ucfirst($this->name_to_label($name))) . ' [' . $type . ']: ' . $val;
 					}
 				}
 				else {

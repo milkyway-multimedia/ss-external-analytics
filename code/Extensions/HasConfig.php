@@ -10,6 +10,8 @@
 namespace Milkyway\SS\ExternalAnalytics\Extensions;
 
 use Milkyway\SS\ExternalAnalytics\Utilities;
+use ToggleCompositeField;
+use FormField;
 
 class HasConfig extends \DataExtension
 {
@@ -24,11 +26,8 @@ class HasConfig extends \DataExtension
 	public static function get_extra_config($class, $extension, $params = []) {
 		$db = [];
 
-		Utilities::execute_on_provider_list(function($config, $prefix) use (&$db) {
-			if(count((array)$config->db())) {
-				foreach($config->db() as $field => $type)
-					$db[ucfirst($config->prefix()) . '_' . $field] = $type;
-			}
+		singleton('ea')->executeDrivers(function($driver, $id) use (&$db) {
+			$db = array_merge($db, $driver->db($id));
 		});
 
 		return [
@@ -51,61 +50,50 @@ class HasConfig extends \DataExtension
 		$providers = [];
 		$self = $this->owner;
 
-		Utilities::execute_on_provider_list(function($config, $prefix) use (&$providers, $self) {
-			if(!count($config->db())) return;
+		singleton('ea')->executeDrivers(function($driver, $id) use (&$providers, $self) {
+			if(!count((array)$driver->db($id))) return;
 
-			$dbFields = [];
-			foreach($config->db() as $field => $type)
-				$dbFields[$field] = ucfirst($config->prefix()) . '_' . $field;
+			$fields = $driver->db($id);
 
-			$providers[$prefix] = $self->scaffoldFormFields([
-				'includeRelations' => false,
-				'tabbed' => false,
-				'ajaxSafe' => true,
-				'restrictFields' => array_values($dbFields),
-			]);
+			$providers[$id] = [
+				'title' => $driver->title(),
+				'fields' => $self->scaffoldFormFields([
+					'includeRelations' => false,
+					'tabbed' => false,
+					'ajaxSafe' => true,
+					'restrictFields' => array_keys($fields),
+				]),
+			];
 
-			$providerFormFields = $providers[$prefix]->dataFields();
+			$providerFormFields = $providers[$id]['fields']->dataFields();
 
-			foreach($dbFields as $field => $dbField) {
-				if(isset($providerFormFields[$dbField]) && ($providerFormFields[$dbField] instanceof \FormField))
-					$providerFormFields[$dbField]->setAttribute('placeholder', Utilities::env_value($field));
+			foreach($fields as $field => $type) {
+				if(isset($providerFormFields[$field]) && ($providerFormFields[$field] instanceof FormField))
+					$providerFormFields[$field]->setAttribute('placeholder', $driver->setting($id, $field));
 			}
 		});
 
 		if(count($providers) > 1) {
-			$tab = $this->tab;
-
-			Utilities::execute_on_provider_list(function($config, $prefix) use ($fields, $providers, $tab) {
-				if(!isset($providers[$prefix])) return;
-
-				$fields->addFieldsToTab('Root.' . $tab, \ToggleCompositeField::create(
-					$prefix . '_fields',
-					$config->i18n_title(),
-					$providers[$prefix]
+			foreach($providers as $id => $options) {
+				$fields->addFieldsToTab('Root.' . $this->tab, ToggleCompositeField::create(
+					$id . '_fields',
+					$options['title'],
+					$options['fields']
 				));
-			});
+			}
 		}
 		elseif(count($providers)) {
-			$fields->addFieldsToTab('Root.' . $this->tab, array_pop($providers));
+			$fields->addFieldsToTab('Root.' . $this->tab . '.' . $providers[0]['title'], $providers[0]['fields']);
 		}
 	}
 
 	public function updateFieldLabels(&$labels) {
-		Utilities::execute_on_provider_list(function($config, $prefix) use (&$labels) {
-			if(count((array)$config->db())) {
-				foreach($config->db() as $field => $type) {
-					$labelField = ucfirst($config->prefix()) . '_' . $field;
-
-					if(isset($labels[$labelField]) && strpos($labels[$labelField], ucfirst($config->prefix() . '_')) === 0) {
-						$labels[$labelField] = isset($labels[$field]) ? $labels[$field] : substr($labels[$labelField], strlen($config->prefix() . '_'));
-					}
+		singleton('ea')->executeDrivers(function($driver, $id) use (&$labels) {
+			if(count((array)$driver->db($id))) {
+				foreach($driver->db($id) as $field => $type) {
+					$labels[$field] = FormField::name_to_label(substr($labels[$field], strlen($id . '_')));
 				}
 			}
 		});
 	}
-
-    public function getGoogleAnalyticsTrackingID() {
-        return Utilities::env_value('TrackingId', $this->owner);
-    }
 }

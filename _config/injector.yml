@@ -2,9 +2,8 @@
 Name: external-analytics--injector
 ---
 Injector:
-
-  'Milkyway\SS\ExternalAnalytics\Config\Contract':
-    class: 'Milkyway\SS\ExternalAnalytics\Config\GoogleAnalytics'
+  'ea':
+    class: 'Milkyway\SS\ExternalAnalytics\Core'
 
   'GuzzleHttp\ClientInterface':
     class: 'GuzzleHttp\Client'
@@ -12,9 +11,12 @@ Injector:
   'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAnalytics':
     dependencies:
       server: '%$GuzzleHttp\ClientInterface'
-      config: '%$Milkyway\SS\ExternalAnalytics\Config\GoogleAnalytics'
+
+  'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaMailchimpGoals':
+    dependencies:
+      server: '%$GuzzleHttp\ClientInterface'
 
   RequestProcessor:
     properties:
       filters:
-        - '%$Milkyway\SS\ExternalAnalytics\Api\TimingsRequestFilter'
+        - '%$Milkyway\SS\ExternalAnalytics\Api\CollectSessionVariables'

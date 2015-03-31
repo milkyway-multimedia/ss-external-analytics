@@ -1,0 +1,15 @@
+---
+Name: external-analytics--mc
+---
+ExternalAnalytics:
+  enabled:
+    mc:
+      driver: 'Milkyway\SS\ExternalAnalytics\Drivers\Mailchimp\Driver'
+
+  get_vars_to_session:
+    'mc.campaign_id':
+      get_var: 'mc_cid'
+      title: 'mailchimpCampaignId'
+    'mc.email_id':
+      get_var: 'mc_eid'
+      title: 'mailchimpUniqueEmailId'
