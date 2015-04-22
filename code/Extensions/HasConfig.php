@@ -10,7 +10,7 @@
 namespace Milkyway\SS\ExternalAnalytics\Extensions;
 
 use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\ManagesFields;
-use Milkyway\SS\ExternalAnalytics\Utilities;
+use Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Driver as GoogleAnalytics;
 use ToggleCompositeField;
 use FormField;
 
@@ -102,5 +102,15 @@ class HasConfig extends \DataExtension
 				}
 			}
 		});
+	}
+
+	public function getGoogleAnalyticsTrackingID() {
+		$trackingId = false;
+		singleton('ea')->executeDrivers(function($driver, $id) use (&$trackingId) {
+			if($trackingId) return;
+
+			$trackingId = ($driver instanceof GoogleAnalytics) && $driver->setting($id, 'TrackingId');
+		});
+		return $trackingId;
 	}
 }
