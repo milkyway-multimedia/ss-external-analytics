@@ -10,6 +10,7 @@
 namespace Milkyway\SS\ExternalAnalytics;
 
 use Milkyway\SS\Director;
+use Session;
 
 class Controller extends \Controller
 {
@@ -19,10 +20,19 @@ class Controller extends \Controller
 			$this->Response->setStatusCode(200);
 
 		if ($request && $request->isAjax()) {
-			return Director::ajax_response([
-				'site_start' => \Session::get('ea.site_start'),
-				'page_start' => \Session::get('ea.page_start'),
-			]);
+			$vars = [
+				'site_start' => Session::get('ea.site_start'),
+				'page_start' => Session::get('ea.page_start'),
+			];
+
+			$getVarsToSession = singleton('env')->get('ExternalAnalytics.get_vars_to_session');
+
+			array_walk($getVarsToSession, function($options, $sessionVar) use(&$vars) {
+				$title = isset($options['title']) ? $options['title'] : $sessionVar;
+				$vars[$title] = Session::get($sessionVar);
+			});
+
+			return Director::ajax_response($vars);
 		}
 
 		return [];

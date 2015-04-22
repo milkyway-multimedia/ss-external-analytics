@@ -1,8 +1,7 @@
 var EA = window.EA || {};
 
 EA.dataField = (function(dataField, $) {
-	var $inputs = [],
-		$done = [];
+	var $inputs = [];
 
 	if(!dataField.hasOwnProperty('parseSelector'))
 		dataField.parseSelector = '.analyticsdata-parser';
@@ -14,6 +13,7 @@ EA.dataField = (function(dataField, $) {
 			$fields.each(function() {
 				var $this = $(this),
 					id = this.id,
+                    $done = $this.data('ea:done') || [],
 					field = $this.data('field'),
 					restrictTo = $this.data('restrictTo');
 
@@ -31,13 +31,14 @@ EA.dataField = (function(dataField, $) {
 
 				$inputs = [];
 				$done.push(name);
+                $this.data('ea.done', $done);
 
 				return true;
 			});
 		}
 	};
 
-	dataField.outputGaTracker = function(tracker) {
+	dataField.outputGaTracker = function(id, tracker) {
 		if(!tracker) return;
 
 		var types = dataField.GA_types || {},
@@ -76,13 +77,14 @@ EA.dataField = (function(dataField, $) {
 
 		for(var type in types) {
 			if(types.hasOwnProperty(type) && tracker.get(type))
-				$inputs.push([[trackerName, types[type]], tracker.get(type)]);
+				$inputs.push([[id + '][' + trackerName, types[type]], tracker.get(type)]);
 		}
 
 		dataField.render(trackerName);
 	};
 
 	dataField.createTrackerInput = function(id, field, name, val) {
+        if(val === null) val = '';
 		return '<input type="hidden" id="' + id + '-' + field.replace(/\[\]/g, '-') + '-' + name.join('-') + '" name="' + field + '[' + name.join('][') + ']' + '" value="' + val + '" />';
 	};
 
@@ -96,15 +98,21 @@ EA.dataField = (function(dataField, $) {
 						return;
 
 					for (var i = 0; i < trackers.length; ++i) {
-						dataField.outputGaTracker(trackers[i]);
+						dataField.outputGaTracker(trackerName, trackers[i]);
 					}
 				};
+
+				if(window.hasOwnProperty(trackerName) && EA.GA.trackers[trackerName].hasOwnProperty('trackers')) {
+					EA.GA.trackers[trackerName].initCallbacks.parseFields(EA.GA.trackers[trackerName].trackers);
+				}
 			}
 		}
 	}
 
-	$inputs.push([['pageSession'], +new Date()]);
-	dataField.render('+defaults');
+	if(EA.hasOwnProperty('core')) {
+		$inputs.push([['pageSession'], +new Date()]);
+		dataField.render('core');
+	}
 
 	return dataField;
-})(EA.dataField || {}, window.jQuery);
+})(EA.dataField || {}, window.jQuery || window.zepto);

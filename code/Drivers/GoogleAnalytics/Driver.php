@@ -37,21 +37,21 @@ class Driver extends AbstractDriver
 
 	public function title($id)
 	{
-		return _t('ExternalAnalytics.' . strtoupper($id) . '_GOOGLE_ANALYTICS', 'Google Analytics');
+		return _t('ExternalAnalytics.' . $this->prependId('GOOGLE_ANALYTICS', $id), 'Google Analytics');
 	}
 
 	public function db($id)
 	{
 		return [
-			strtoupper($id) . '_TrackingId' => 'Varchar(255)',
+			$this->prependId('TrackingId', $id) => 'Varchar(255)',
 		];
 	}
 
 	public function db_to_environment_mapping($id)
 	{
 		return array_merge(parent::db_to_environment_mapping($id), [
-			strtoupper($id) . '_TrackingId' => 'GoogleAnalytics|Google|SiteConfig.ga_tracking_id',
-			strtoupper($id) . '_JavascriptTemplate' => 'GoogleAnalytics|Google|SiteConfig.ga_javascript_template',
+			$this->prependId('TrackingId', $id) => 'GoogleAnalytics|Google|SiteConfig.ga_tracking_id',
+			$this->prependId('JavascriptTemplate', $id) => 'GoogleAnalytics|Google|SiteConfig.ga_javascript_template',
 		]);
 	}
 

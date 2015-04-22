@@ -9,7 +9,6 @@ ExternalAnalytics:
         - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Create'
         - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Ecommerce'
         - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Events'
-        - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\SocialInteractions'
         - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Errors'
         - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Send'
 

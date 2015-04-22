@@ -1,4 +1,4 @@
-<?php namespace Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics;
+<?php namespace Milkyway\SS\ExternalAnalytics\Drivers\Core;
 /**
  * Milkyway Multimedia
  * SocialInteractions.php
@@ -10,10 +10,12 @@
 use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\Driver as DriverContract;
 use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\ScriptAttribute;
 use ViewableData;
+use Requirements;
 
 class SocialInteractions implements ScriptAttribute {
     public function output(DriverContract $driver, $id, ViewableData $controller = null, $params = []) {
 	    singleton('assets')->utilities_js();
-        return @file_get_contents(BASE_PATH . '/' . SS_EXTERNAL_ANALYTICS_DIR . '/javascript/google-analytics.track.social.js');
+        Requirements::javascript(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/social-tracker.js');
+        return '';
     }
 } 

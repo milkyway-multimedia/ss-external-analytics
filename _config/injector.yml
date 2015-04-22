@@ -9,11 +9,11 @@ Injector:
     class: 'GuzzleHttp\Client'
 
   'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAnalytics':
-    dependencies:
+    properties:
       server: '%$GuzzleHttp\ClientInterface'
 
   'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaMailchimpGoals':
-    dependencies:
+    properties:
       server: '%$GuzzleHttp\ClientInterface'
 
   RequestProcessor:

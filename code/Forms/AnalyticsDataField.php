@@ -30,11 +30,11 @@ class AnalyticsDataField extends FormField {
 		$stats = $this->value;
 
 		if($session = Session::get('ea.site_start')) {
-			$sessionNice = DBField::create_field('SS_Datetime', $session);
+			$siteSession = DBField::create_field('SS_Datetime', $session);
 
 			foreach($stats as $type => $data) {
-				$stats['siteVisitStarted'] = $sessionNice->Nice();
-				$stats['timeOnSite'] = $sessionNice->TimeDiff();
+				$stats['siteVisitStarted'] = $siteSession->Nice();
+				$stats['timeOnSite'] = $siteSession->TimeDiff();
 			}
 		}
 
@@ -49,34 +49,34 @@ class AnalyticsDataField extends FormField {
 			}
 		});
 
+		if(isset($stats['pageSession'])) {
+			$pageSession = DBField::create_field('SS_Datetime', $stats['pageSession'] / 1000);
+			$stats['pageEntered'] = $pageSession->Nice();
+			$stats['timeOnPage'] = $pageSession->TimeDiff();
+			unset($stats['pageSession']);
+		}
+
 		if($this->serialiseOnSave) {
 			return Convert::array2json($stats);
 		}
 		else {
 			$output = [];
-
-			foreach($stats as $type => $data) {
-				if(is_array($data)) {
-					foreach($data as $name => $val) {
-						$name = str_replace('-', ' ', $name);
-						$output[] = _t('AnalyticsDataField.' . str_replace(' ', '_', strtoupper($name)), ucfirst($this->name_to_label($name))) . ' [' . $type . ']: ' . $val;
-					}
-				}
-				else {
-					if($type == 'pageSession') {
-						$pageSession = DBField::create_field('SS_Datetime', $data / 1000);
-
-						$output[] = _t('AnalyticsDataField.PAGE_ENTERED', 'Page entered') . ': ' . $pageSession->Nice();
-						$output[] = _t('AnalyticsDataField.TIME_ON_PAGE', 'Time on page') . ': ' . $pageSession->TimeDiff();
-					}
-					else {
-						$type = str_replace('-', ' ', $type);
-						$output[] = _t('AnalyticsDataField.' . str_replace(' ', '_', strtoupper($type)), ucfirst($this->name_to_label($type))) . ': ' . $data;
-					}
-				}
-			}
-
+			$this->convertStatForOutput($stats, $output);
 			return implode("\n", $output);
+		}
+	}
+
+	protected function convertStatForOutput($stat, &$output, $type = '') {
+		if(is_array($stat)) {
+			foreach($stat as $name => $val) {
+				$name = $type ? $name . '[' . $type . ']' : $name;
+				$output[] = $this->convertStatForOutput($val, $output, $name);
+			}
+		}
+		else {
+			$type = str_replace('-', ' ', $type);
+			$value = _t('AnalyticsDataField.' . str_replace(' ', '_', strtoupper($type)), ucfirst($this->name_to_label($type))) . ': ' . $stat;
+			return $value;
 		}
 	}
 } 

@@ -28,7 +28,7 @@ abstract class Driver implements Contract {
 	public function db_to_environment_mapping($id)
 	{
 		return [
-			strtoupper($id) . '_DisabledScriptAttributes' => 'ExternalAnalytics.disabled_script_attributes',
+			$this->prependId('DisabledScriptAttributes', $id) => 'ExternalAnalytics.disabled_script_attributes',
 		];
 	}
 
@@ -39,23 +39,22 @@ abstract class Driver implements Contract {
 		], singleton('env')->get('ExternalAnalytics.enabled.' . $id));
 	}
 
-	public function setting($id, $setting, $default = null, $cache = true) {
+	public function setting($id, $setting, $default = null, $params = []) {
 		$callbacks = [];
 
 		if(ClassInfo::exists('SiteConfig')) {
 			$siteConfig = SiteConfig::current_site_config();
 
 			$callbacks['SiteConfig'] = function($keyParts, $key) use($id, $setting, $siteConfig) {
-				return $siteConfig->{strtoupper($id) . '_' . $setting};
+				$value = $siteConfig->{strtoupper($id) . '_' . $setting};
+				return $value ?: $this->getOtherDefaultForSetting($setting, $id);
 			};
 		}
 
-		return singleton('env')->get(strtoupper($id) . '_' . $setting, $default, [
+		return singleton('env')->get(strtoupper($id) . '_' . $setting, $default, array_merge([
 			'beforeConfigNamespaceCheckCallbacks' => $callbacks,
 			'mapping' => $this->db_to_environment_mapping($id),
-			'fromCache' => $cache,
-			'doCache' => $cache,
-		]);
+		], $params));
 	}
 
 	protected function renderWithTemplate($id, ViewableData $controller = null, $params = []) {
@@ -101,5 +100,13 @@ abstract class Driver implements Contract {
 			$controller->extend('updateExternalAnalyticsAttributes', $output, $this, $id, $controller, $params);
 
 		return count($output) ? trim(implode("\n", $output)) : '';
+	}
+
+	protected function prependId($content, $id) {
+		return strtoupper($id) . '_' . $content;
+	}
+
+	protected function getOtherDefaultForSetting($setting, $id) {
+		return null;
 	}
 }

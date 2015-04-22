@@ -18,7 +18,7 @@ abstract class HttpListener {
 	/* @var \GuzzleHttp\ClientInterface */
 	public $server;
 
-	protected function request($type = 'post', $params = [])
+	protected function request($params = [], $type = 'post')
 	{
 		$response = $this->server->$type(
 			$this->url(),

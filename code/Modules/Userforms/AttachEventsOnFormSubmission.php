@@ -7,24 +7,27 @@
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
-use Extension;
+use Milkyway\SS\ExternalAnalytics\Modules\Model\FireEvent;
 
-class AttachEventsOnFormSubmission extends Extension {
+class AttachEventsOnFormSubmission extends FireEvent {
 	public function afterCallActionHandler($request, $action) {
-		if(
-			($request->isAjax() && in_array($action, ['process', 'processForm'])) ||
-			(!$request->isAjax() && $action == 'finished')
+		if(!$request)
+			$request = $this->owner->Request;
+
+		if( $request &&
+			(($request->isAjax() && in_array($action, ['process', 'processForm'])) ||
+			(!$request->isAjax() && $action == 'finished'))
 		) {
-			$this->fire($this->owner->redirectedTo());
+			$this->fire((bool)$this->owner->redirectedTo());
 		}
 	}
 
-	protected function fire($recordViaServer = false) {
-		singleton('ea')->queue('event', [
+	protected function params() {
+		return array_merge([
 			'category' => 'forms',
 			'action' => 'submitted',
 			'label' => $this->owner->Title,
-			'value' => $this->owner->ConversionValue ?: singleton('env')->get('Userforms|ExternalAnalytics.conversion_value', 1),
-		], get_class($this->owner) . '-' . $this->owner->ID, $this->owner, $recordViaServer);
+			'value' => singleton('env')->get('Userforms|ExternalAnalytics.conversion_value', 1),
+		], (array)$this->owner->ExternalAnalyticsParams);
 	}
 }

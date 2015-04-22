@@ -10,7 +10,6 @@
 namespace Milkyway\SS\ExternalAnalytics\Listeners;
 
 use League\Event\EventInterface as Event;
-use Milkyway\SS\ExternalAnalytics\Utilities;
 use Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Driver;
 
 class RecordViaGoogleAnalytics extends HttpListener
@@ -29,6 +28,35 @@ class RecordViaGoogleAnalytics extends HttpListener
 		'action' => 'ea',
 		'label' => 'el',
 		'value' => 'ev',
+
+		'eventCategory' => 'ec',
+		'eventAction' => 'ea',
+		'eventLabel' => 'el',
+		'eventValue' => 'ev',
+
+		'order_id' => 'ti',
+		'transaction_id' => 'ti',
+		'affiliation' => 'ta',
+		'revenue' => 'tr',
+		'shipping' => 'ts',
+		'tax' => 'tt',
+		'product' => 'in',
+		'price' => 'ip',
+		'quantity' => 'iq',
+		'code' => 'ic',
+		'sku' => 'ic',
+		'product_category' => 'iv',
+		'currency' => 'cu',
+		'product_action' => 'pa',
+		'product_action_list' => 'pal',
+		'coupon' => 'tcc',
+		'checkout_step' => 'cos',
+		'checkout_info' => 'col',
+		'promo_action' => 'promoa',
+
+		'social_network' => 'sn',
+		'social_action' => 'sa',
+		'social_target' => 'st',
 	];
 
 	public function event(Event $e, $queueName, $params = [])
@@ -61,5 +89,9 @@ class RecordViaGoogleAnalytics extends HttpListener
 		});
 
 		return $results;
+	}
+
+	public function ecommerce(Event $e, $queueName, $params = []) {
+		return $this->event($e, $queueName, $params);
 	}
 } 

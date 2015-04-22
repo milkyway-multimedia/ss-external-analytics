@@ -9,6 +9,7 @@
 
 namespace Milkyway\SS\ExternalAnalytics\Extensions;
 
+use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\ManagesFields;
 use Milkyway\SS\ExternalAnalytics\Utilities;
 use ToggleCompositeField;
 use FormField;
@@ -56,7 +57,7 @@ class HasConfig extends \DataExtension
 			$fields = $driver->db($id);
 
 			$providers[$id] = [
-				'title' => $driver->title(),
+				'title' => $driver->title($id),
 				'fields' => $self->scaffoldFormFields([
 					'includeRelations' => false,
 					'tabbed' => false,
@@ -68,8 +69,14 @@ class HasConfig extends \DataExtension
 			$providerFormFields = $providers[$id]['fields']->dataFields();
 
 			foreach($fields as $field => $type) {
-				if(isset($providerFormFields[$field]) && ($providerFormFields[$field] instanceof FormField))
-					$providerFormFields[$field]->setAttribute('placeholder', $driver->setting($id, $field));
+				if(isset($providerFormFields[$field]) && ($providerFormFields[$field] instanceof FormField)) {
+					$idField = strpos($field, strtoupper($id) . '_') === 0 ? substr($field, strlen(strtoupper($id) . '_')) : $field;
+					$providerFormFields[$field]->setAttribute('placeholder', $driver->setting($id, $idField));
+				}
+			}
+
+			if($driver instanceof ManagesFields) {
+				$providers[$id]['fields'] = $driver->fieldManager($id, $providers[$id]['fields']);
 			}
 		});
 

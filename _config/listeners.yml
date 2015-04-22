@@ -6,3 +6,6 @@ Eventful:
     'ea:event.ea:default':
       - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAnalytics'
       - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaMailchimpGoals'
+    'ea:ecommerce.ea:default':
+      - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAnalytics'
+      - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaEcommerce360'

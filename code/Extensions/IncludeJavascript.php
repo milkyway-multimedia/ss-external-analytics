@@ -1,4 +1,4 @@
-<?php
+<?php namespace Milkyway\SS\ExternalAnalytics\Extensions;
 /**
  * Milkyway Multimedia
  * Logger.php
@@ -7,27 +7,47 @@
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
-namespace Milkyway\SS\ExternalAnalytics\Extensions;
-
-use Milkyway\SS\ExternalAnalytics\Utilities;
-use Requirements;
-use Milkyway\SS\Director;
-use Extension;
 use Flushable;
+use Extension;
+use Requirements;
 use SS_Cache;
+use Milkyway\SS\Director;
 
 class IncludeJavascript extends Extension implements Flushable {
+	protected static $controller;
+	protected static $currentExtension;
 	protected $cache;
 
-	public function onBeforeHTTPError($errorCode, $request) {
-		$this->afterCallActionHandler($request);
+	public function onAfterInit() {
+		static::$controller = $this->owner;
+		static::$currentExtension = $this;
 	}
 
-	public function afterCallActionHandler($request) {
-		$self = $this;
+	public function afterCallActionHandler() {
+		$this->onAfterInit();
+		$this->js();
+	}
+
+//	public function beforeProcessHtml($event, $template) {
+//		\debug::show($template);
+//		$this->js();
+//	}
+//
+//	public function beforeProcessResponse() {
+//		$this->js();
+//	}
+
+	protected function js() {
+		if(!static::$currentExtension || !static::$controller)
+			return;
+
+		static::$currentExtension->setOwner(static::$controller);
+
+		$self = static::$currentExtension;
+		$request = $self->owner->Request;
 		$params = array_merge(
 			['SessionLink' => singleton('Milkyway\SS\ExternalAnalytics\Controller')->Link()],
-			(array)$this->owner->ExternalAnalyticsParams
+			(array)$self->owner->ExternalAnalyticsParams
 		);
 
 		singleton('ea')->executeDrivers(function($driver, $id) use($self, $params, $request) {

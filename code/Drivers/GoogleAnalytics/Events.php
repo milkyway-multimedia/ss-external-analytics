@@ -23,7 +23,7 @@ class Events implements ScriptAttribute
 			$output[] = $id . "('send', {$this->createEvent($options, $type)});";
 		}
 
-		$additionalEvents = (array)singleton('ea')->unqueue('events');
+		$additionalEvents = (array)singleton('ea')->unqueue('event', $id);
 
 		foreach ($additionalEvents as $type => $options) {
 			$output[] = $id . "('send', {$this->createEvent($options, $type)});";
@@ -40,10 +40,19 @@ class Events implements ScriptAttribute
 			$settings = array_merge($params, $settings);
 
 		if (!isset($settings['eventCategory']))
-			$settings['eventCategory'] = $type;
+			$settings['eventCategory'] = isset($settings['category']) ? $settings['category'] : $type;
 
-		if (!isset($settings['eventAction']))
-			$settings['eventAction'] = 'click';
+		if (!isset($settings['eventAction'])) {
+			$settings['eventAction'] = isset($settings['action']) ? $settings['action'] : 'click';
+		}
+
+		if (!isset($settings['eventLabel']) && isset($settings['label'])) {
+			$settings['eventLabel'] = $settings['label'];
+		}
+
+		if (!isset($settings['eventValue']) && isset($settings['value'])) {
+			$settings['eventValue'] = $settings['value'];
+		}
 
 		return json_encode($settings);
 	}

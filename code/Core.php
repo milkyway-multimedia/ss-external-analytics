@@ -20,10 +20,11 @@ class Core {
 	}
 
 	protected $_queue = [];
+	protected $_unqueuedFor = [];
 
 	public function queue($queue, $params = [], $id = '', RequestHandler $controller = null, $recordViaServer = false) {
 		if($recordViaServer || ($controller && $controller->Request && $controller->Request->isAjax())) {
-			singleton('Eventful')->fire('ea:'.$queue, $params, $controller);
+			singleton('Eventful')->fire('ea:'.$queue, $queue, $params, $controller);
 			return;
 		}
 
@@ -36,15 +37,21 @@ class Core {
 			$this->_queue[$queue][] = $params;
 	}
 
-	public function unqueue($queue, $idOrValue = null) {
+	public function unqueue($queue, $driverId = '', $idOrValue = null) {
 		$value = [];
 
 		if(!isset($this->_queue[$queue]))
 			return $value;
 
+		if($driverId && isset($this->_unqueuedFor[$driverId]) && in_array($queue, $this->_unqueuedFor[$driverId]))
+			return $value;
+
+		if($driverId && !isset($this->_unqueuedFor[$driverId]))
+			$this->_unqueuedFor[$driverId] = [];
+
 		if(!$idOrValue) {
 			$value = $this->_queue[$queue];
-			unset($this->_queue[$queue]);
+			if(!$driverId) unset($this->_queue[$queue]);
 		}
 		else if(is_string($idOrValue) && isset($this->_queue[$queue][$idOrValue])) {
 			$value = $this->_queue[$queue][$idOrValue];
@@ -59,6 +66,21 @@ class Core {
 			}
 		}
 
+		if($driverId)
+			$this->_unqueuedFor[$driverId][] = $queue;
+
 		return $value;
+	}
+
+	public function getQueue($name = '') {
+		if(!$name)
+			return $this->_queue;
+
+		return isset($this->_queue[$name]) ? $this->_queue[$name] : null;
+	}
+
+	public function clearQueue() {
+		$this->_queue = [];
+		return $this;
 	}
 } 

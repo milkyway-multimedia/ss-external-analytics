@@ -3,10 +3,10 @@ var EA = window.EA || {GA : {}};
 if(!EA.hasOwnProperty('GA'))
     EA.GA = {};
 
-EA.GA.trackers = (function (_{$Var}) {
+EA.GA.trackers = (function (trackers) {
     (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;e=o.createElement(i);r=o.getElementsByTagName(i)[0];e.src='//www.google-analytics.com/analytics.js';r.parentNode.insertBefore(e,r)}(window,document,'script','$Var'));
 
-    _{$Var}['$Var'] = {
+    trackers['$Var'] = {
         variable:       '$Var',
         initCallbacks:  {},
         hitCallback:    function(){},
@@ -15,39 +15,41 @@ EA.GA.trackers = (function (_{$Var}) {
         }
     };
 
-    return _{$Var};
+    return trackers;
 }(EA.GA.trackers || {}));
 
-EA.GA.trackers = (function (_{$Var}) {
+EA.GA.trackers = (function (trackers, mwm, EA) {
     <% if $Attributes %>
         $Attributes
     <% else_if $TrackingId %>
         $Var('create', '$TrackingId');
         $Var('send', 'pageview', {
             'hitCallback': function() {
-                _{$Var}['{$Var}'].hitCallback();
+                trackers['{$Var}'].hitCallback();
             }
         });
     <% end_if %>
 
     {$Var}(function() {
-        _{$Var}['{$Var}'].trackers = {$Var}.getAll();
+    if(!EA.hasOwnProperty('eventTriggers')) {
+        EA.eventTriggers = {};
+    }
 
-        if(_{$Var}['{$Var}'].hasOwnProperty('initCallbacks')) {
-            for(var callback in _{$Var}['{$Var}'].initCallbacks) {
-                if(_{$Var}['{$Var}'].initCallbacks.hasOwnProperty(callback)) {
-                    _{$Var}['{$Var}'].initCallbacks[callback].apply({$Var}, [_{$Var}['{$Var}'].trackers]);
+        EA.eventTriggers['{$Var}'] = trackers['{$Var}'].sendEvent;
+
+        trackers['{$Var}'].trackers = {$Var}.getAll();
+        EA.GA.trackers = trackers;
+
+        mwm.utilities.triggerCustomEvent(window, "ea::loaded:google-analytics", [trackers['{$Var}']]);
+
+        if(trackers['{$Var}'].hasOwnProperty('initCallbacks')) {
+            for(var callback in trackers['{$Var}'].initCallbacks) {
+                if(trackers['{$Var}'].initCallbacks.hasOwnProperty(callback)) {
+                    trackers['{$Var}'].initCallbacks[callback].apply({$Var}, [trackers['{$Var}'].trackers]);
                 }
             }
         }
-
-        <% if $SessionLink %>
-            mwm.utilities.requestViaAjax('$SessionLink', 'JSON', function(response) {
-                _{$Var}['{$Var}'].site_start = response.data.site_start;
-                _{$Var}['{$Var}'].page_start = response.data.page_start;
-            });
-        <% end_if %>
     });
 
-    return _{$Var};
-}(EA.GA.trackers || {}));
+    return trackers;
+}(EA.GA.trackers || {}, window.mwm || {}, EA || {}));

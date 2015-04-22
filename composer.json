@@ -8,15 +8,16 @@
     "Google Analytics",
     "statistics",
     "silverstripe",
-    "Mailchimp"
+    "Mailchimp",
+    "Ecommerce360",
+    "Mailchimp Goals"
   ],
   "license": "MIT",
   "require": {
     "silverstripe/framework": "~3.1",
-    "milkyway-multimedia/ss-mwm": "dev-master",
     "guzzlehttp/guzzle": "~4",
+    "milkyway-multimedia/ss-mwm": "dev-master",
     "milkyway-multimedia/ss-eventful": "dev-master"
-
   },
   "suggested": {
     "milkyway-multimedia/ss-external-analytics-reports": "Reports for supported interfaces (Google Analytics)"

@@ -5,6 +5,8 @@ ExternalAnalytics:
   enabled:
     mc:
       driver: 'Milkyway\SS\ExternalAnalytics\Drivers\Mailchimp\Driver'
+      attributes:
+        - 'Milkyway\SS\ExternalAnalytics\Drivers\Mailchimp\Events'
 
   get_vars_to_session:
     'mc.campaign_id':
