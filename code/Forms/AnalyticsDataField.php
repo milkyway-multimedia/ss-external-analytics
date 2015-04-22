@@ -38,6 +38,13 @@ class AnalyticsDataField extends FormField {
 			}
 		}
 
+		if(isset($stats['pageSession'])) {
+			$pageSession = DBField::create_field('SS_Datetime', $stats['pageSession'] / 1000);
+			$stats['pageEntered'] = $pageSession->Nice();
+			$stats['timeOnPage'] = $pageSession->TimeDiff();
+			unset($stats['pageSession']);
+		}
+
 		$getVarsToSession = singleton('env')->get('ExternalAnalytics.get_vars_to_session');
 
 		array_walk($getVarsToSession, function($options, $sessionVar) use(&$stats) {
@@ -48,13 +55,6 @@ class AnalyticsDataField extends FormField {
 				$stats[$title] = $value;
 			}
 		});
-
-		if(isset($stats['pageSession'])) {
-			$pageSession = DBField::create_field('SS_Datetime', $stats['pageSession'] / 1000);
-			$stats['pageEntered'] = $pageSession->Nice();
-			$stats['timeOnPage'] = $pageSession->TimeDiff();
-			unset($stats['pageSession']);
-		}
 
 		if($this->serialiseOnSave) {
 			return Convert::array2json($stats);
