@@ -47,7 +47,7 @@ class Driver extends AbstractDriver implements ManagesFields
 			'uuid' => $this->setting($id, 'UUId', null, [
 				'objects' => [$controller, $this]
 			]),
-			'dc' => $this->setting($id, 'dc', 'us10', [
+			'dc' => $this->setting($id, 'dc', 'us1', [
 				'objects' => [$controller, $this]
 			]),
 		], $params);
@@ -72,8 +72,8 @@ class Driver extends AbstractDriver implements ManagesFields
 
 	public function fieldManager($id, $fields) {
 		if($uuid = $fields->fieldByName($this->prependId('UUId', $id))) {
-			$uuid->setDescription(_t('ExternalAnalytics.DESC-UUID', '<a href="{link}">This UU ID can be found in your Mailchimp account under Integrations, once you have enabled the Goal module</a>', [
-				'link' => 'https://us10.admin.mailchimp.com/account/integrations/#facebook',
+			$uuid->setDescription(_t('ExternalAnalytics.DESC-UUID', '<a href="{link}" target="_blank">This UUId can be found in your Mailchimp account under Integrations, once you have enabled the Goal module</a>', [
+				'link' => 'https://us1.admin.mailchimp.com/account/integrations/#facebook',
 			]));
 		}
 
@@ -96,7 +96,7 @@ class Driver extends AbstractDriver implements ManagesFields
 			if(!$title)
 				$title = singleton('LeftAndMain')->ApplicationName;
 
-			return $title ?: 'SS Store';
+			return $title ?: 'Silverstripe Store';
 		}
 
 		return parent::getOtherDefaultForSetting($setting, $id);

@@ -10,16 +10,8 @@
 use Milkyway\SS\ExternalAnalytics\Modules\Model\FireEvent;
 
 class AttachEventsOnFormSubmission extends FireEvent {
-	public function afterCallActionHandler($request, $action) {
-		if(!$request)
-			$request = $this->owner->Request;
-
-		if( $request &&
-			(($request->isAjax() && in_array($action, ['process', 'processForm'])) ||
-			(!$request->isAjax() && $action == 'finished'))
-		) {
-			$this->fire((bool)$this->owner->redirectedTo());
-		}
+	public function updateEmailData() {
+		$this->fire(true);
 	}
 
 	protected function params() {

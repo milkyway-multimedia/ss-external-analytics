@@ -21,11 +21,17 @@ class IncludeJavascript extends Extension implements Flushable {
 	public function onAfterInit() {
 		static::$controller = $this->owner;
 		static::$currentExtension = $this;
+
+		if(!singleton('env')->get('ExternalAnalytics.include_js_after_action_handled')) {
+			$this->js();
+		}
 	}
 
 	public function afterCallActionHandler() {
 		$this->onAfterInit();
-		$this->js();
+		if(singleton('env')->get('ExternalAnalytics.include_js_after_action_handled')) {
+			$this->js();
+		}
 	}
 
 //	public function beforeProcessHtml($event, $template) {

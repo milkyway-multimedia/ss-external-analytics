@@ -29,6 +29,34 @@ Add the following to your composer.json file
 
 ```
 
+# IMPORTANT
+The javascript is added on the onAfterInit method for the controller. This means that in your actions you have to take care of the analytics collection before this extension is reached. This is due to Controller not having the same entry 
+
+To fix this, you must set in your config:
+
+```
+ExternalAnalytics:
+  include_js_after_action_handled: true
+```
+
+And add this code to your Page_Controller:
+
+```
+	public function getViewer($action) {
+	    $res = $this->extend('beforeCallActionHandler', $this->request, $action);
+	    if ($res) return reset($res);
+	    
+	    $viewer = parent::getViewer($action);
+
+	    $res = $this->extend('afterCallActionHandler', $this->request, $action);
+	    if ($res) return reset($res);
+
+        return $viewer;
+    }
+```
+
+This will allow you to add any additional params for external analytics in your action methods. For most implementations it's not needed however.
+
 ## License 
 * MIT
 

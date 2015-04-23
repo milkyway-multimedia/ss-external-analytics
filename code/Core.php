@@ -8,12 +8,17 @@
  */
 
 use RequestHandler;
+use Config;
 
 class Core {
 	public function executeDrivers($callback) {
 		foreach(array_diff_key(
-			        (array)singleton('env')->get('ExternalAnalytics.enabled'),
-			        array_flip((array)singleton('env')->get('ExternalAnalytics.disabled'))
+			        (array)singleton('env')->get('ExternalAnalytics.enabled', [], [
+				        'on' => Config::FIRST_SET
+			        ]),
+			        array_flip((array)singleton('env')->get('ExternalAnalytics.disabled', [], [
+				        'on' => Config::FIRST_SET
+			        ]))
 		        ) as $id => $options) {
 			$callback(\Object::create($options['driver']), $id);
 		}

@@ -19,6 +19,7 @@ class Ecommerce implements ScriptAttribute {
 
 		if($controller) {
 			$controller->extend('updateExternalAnalyticsEcommerceParams', $params, $driver, $id);
+			$controller->extend('updateGoogleAnalyticsEcommerceParams', $params, $driver, $id);
 		}
 
 		if(isset($params['ecommerce']) && $params['ecommerce'])
@@ -45,6 +46,7 @@ class Ecommerce implements ScriptAttribute {
 
 		if($controller) {
 			$controller->extend('onExternalAnalyticsEcommerce', $output, $driver, $id, $params, $script);
+			$controller->extend('onGoogleAnalyticsEcommerce', $output, $driver, $id, $params, $script);
 		}
 
 		if(count($output)) {
