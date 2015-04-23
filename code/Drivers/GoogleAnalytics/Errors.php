@@ -26,8 +26,9 @@ class Errors implements ScriptAttribute {
 			$errorCode = $response->getStatusCode();
 
 		if($errorCode) {
+			$type = $errorCode < 500 ? 'exception' : 'fatalException';
 			$settings = '{ exDescription: \'' . _t('ErrorPage.' . $errorCode, $errorCode) . '\'}';
-			return $id . "('send', 'exception', {$settings});\n";
+			return $id . "('send', '{$type}', {$settings});\n";
 		}
 
 		return '';
