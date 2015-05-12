@@ -1,0 +1,7 @@
+---
+Name: external-analytics--twitter
+---
+ExternalAnalytics:
+  conversion_trackers:
+    twitter:
+      url: 'https://analytics.twitter.com/i/adsct?txn_id=$id&p_id=Twitter'

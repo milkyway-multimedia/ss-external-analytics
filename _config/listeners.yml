@@ -6,6 +6,12 @@ Eventful:
     'ea:event.ea:default':
       - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAnalytics'
       - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaMailchimpGoals'
+      - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAdwords'
+      - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaFacebook'
+      - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaTwitter'
     'ea:ecommerce.ea:default':
       - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAnalytics'
       - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaEcommerce360'
+      - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAdwords'
+      - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaFacebook'
+      - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaTwitter'

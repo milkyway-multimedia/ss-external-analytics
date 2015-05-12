@@ -1,0 +1,7 @@
+---
+Name: external-analytics--google-adwords
+---
+ExternalAnalytics:
+  conversion_trackers:
+    google_adwords:
+      url: 'https//www.googleadservices.com/pagead/conversion/$id?script=0'

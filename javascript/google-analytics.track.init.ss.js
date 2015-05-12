@@ -31,9 +31,9 @@ EA.GA.trackers = (function (trackers, mwm, EA) {
     <% end_if %>
 
     {$Var}(function() {
-    if(!EA.hasOwnProperty('eventTriggers')) {
-        EA.eventTriggers = {};
-    }
+        if(!EA.hasOwnProperty('eventTriggers')) {
+            EA.eventTriggers = {};
+        }
 
         EA.eventTriggers['{$Var}'] = trackers['{$Var}'].sendEvent;
 

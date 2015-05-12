@@ -52,10 +52,8 @@ class Events implements ScriptAttribute
 				return $options['eventAction'];
 			else if(isset($options['hitType']))
 				return $options['hitType'];
-
-			return array_shift($options);
 		}
 
-		return json_encode($options);
+		return trim(json_encode($options), '"');
 	}
 } 

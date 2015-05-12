@@ -1,6 +1,8 @@
 var EA = window.EA || {social: {}};
 
 EA.social = (function (social, mwm) {
+    var done = [];
+
     social.extractParamFromUri = function (uri, paramName) {
         if (!uri) return '';
 
@@ -12,8 +14,12 @@ EA.social = (function (social, mwm) {
     };
 
     social.fb = function (event, action) {
+        if(done.indexOf('fb:'+event+':'+action) !== -1) return;
+
         try {
             if (window.hasOwnProperty('FB') && window.FB.hasOwnProperty('Event') && window.FB.Event.hasOwnProperty('subscribe')) {
+                done.push('fb:'+event+':'+action);
+
                 window.FB.Event.subscribe(event, function (targetUrl) {
                     mwm.utilities.triggerCustomEvent(window, "ea::social-event", [{
                         socialNetwork: 'facebook',
@@ -26,8 +32,12 @@ EA.social = (function (social, mwm) {
     };
 
     social.twitter = function (eventName, action) {
+        if(done.indexOf('twitter:'+eventName+':'+action) !== -1) return;
+
         try {
             if (window.hasOwnProperty('twttr') && window.twttr.hasOwnProperty('events')) {
+                done.push('twitter:'+eventName+':'+action);
+
                 twttr.ready(function (twttr) {
                     twttr.events.bind(eventName, function (event) {
                         if (event) {
@@ -35,9 +45,11 @@ EA.social = (function (social, mwm) {
 
                             if (event.target && event.target.nodeName == 'IFRAME')
                                 targetUrl = social.extractParamFromUri(event.target.src, 'url');
+                            else if(event.data && event.data.screen_name)
+                                targetUrl = event.data.screen_name;
 
-                            if (event.data && event.data.user_id)
-                                action = action + ' (@' + event.data.user_id + ')';
+                            if (event.data && event.data.screen_name)
+                                action = action + ' (@' + event.data.screen_name + ')';
 
                             mwm.utilities.triggerCustomEvent(window, "ea::social-event", [{
                                 socialNetwork: 'twitter',
@@ -51,6 +63,29 @@ EA.social = (function (social, mwm) {
         } catch (e) {}
     };
 
+    social.addthis = function (action) {
+        if(done.indexOf('addthis:'+action) !== -1) return;
+
+        try {
+            if (window.hasOwnProperty('addthis')) {
+                done.push('addthis:'+action);
+
+                var share = function (event) {
+                    var socialTarget = event.hasOwnProperty('hash') ? event.hash : window.location.href;
+
+                    mwm.utilities.triggerCustomEvent(window, "ea::social-event", [{
+                        socialNetwork: event.service,
+                        socialAction:  action,
+                        socialTarget:  socialTarget
+                    }]);
+                };
+
+                addthis.addEventListener('addthis.menu.share', share);
+                addthis.addEventListener('addthis.user.clickback', share);
+            }
+        } catch (e) {}
+    };
+
     social.init = function () {
         social.fb('edge.create', 'like');
         social.fb('edge.remove', 'unlike');
@@ -59,8 +94,13 @@ EA.social = (function (social, mwm) {
         social.fb('comment.remove', 'deleted comment');
 
         social.twitter('tweet', 'tweet');
+        social.twitter('retweet', 'retweet');
         social.twitter('follow', 'follow');
+        social.twitter('unfollow', 'unfollow');
         social.twitter('favorite', 'favourite');
+        social.twitter('unfavorite', 'unfavourite');
+
+        social.addthis('addthis:share');
     };
 
     social.init();
@@ -68,26 +108,13 @@ EA.social = (function (social, mwm) {
     mwm.utilities.attachToEvent(window, "mwm::loaded:js", social.init);
 
     mwm.utilities.attachToEvent(window, "ea::social-event", function(e, data) {
+        if(!data)
+            data = e.detail[0];
+
         data.hitType = 'social';
-        var key;
 
-        if(EA.hasOwnProperty('GA') && EA.GA.hasOwnProperty('trackers')) {
-            for (key in EA.GA.trackers) {
-                if (EA.GA.trackers.hasOwnProperty(key) && EA.GA.trackers[key].hasOwnProperty('sendEvent')) {
-                    EA.GA.trackers[key].sendEvent(data);
-                }
-            }
-        }
-
-        if(EA.hasOwnProperty('MC') && EA.MC.hasOwnProperty('trackers')) {
-            for (key in EA.MC.trackers) {
-                if (EA.MC.trackers.hasOwnProperty(key) && EA.MC.trackers[key].hasOwnProperty('sendEvent')) {
-                    EA.MC.trackers[key].sendEvent(data.socialAction);
-                    EA.MC.trackers[key].sendEvent(data.socialAction + ' (' + data.socialTarget + ')');
-                }
-            }
-        }
+        EA.event(data);
     });
 
     return social;
-}(EA.core || {}, window.mwm || {}));
+}(EA.social || {}, window.mwm || {}));

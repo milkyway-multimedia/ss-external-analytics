@@ -78,9 +78,17 @@ abstract class Driver implements Contract {
 				echo "</pre>";
 			}
 
-			return SSViewer::execute_string(file_get_contents($this->template), ArrayData::create($params));
+			$template = SSViewer::execute_string(file_get_contents($this->template), ArrayData::create($params));
 		} else
-			return ArrayData::create($params)->renderWith($this->template);
+			$template = ArrayData::create($params)->renderWith($this->template);
+
+		$params = array_filter($params, function($value) {
+			return is_string($value) || is_numeric($value);
+		});
+
+		return str_replace(array_map(function($key) {
+			return '{{ ' . strtolower($key) . ' }}';
+		}, array_keys($params)), $params, $template);
 	}
 
 	protected function attributes($id, ViewableData $controller = null, $params = []) {

@@ -25,23 +25,14 @@ class Driver extends AbstractDriver
 
 	public function db_to_environment_mapping($id)
 	{
-		return [
-			strtoupper($id) . '_JavascriptTemplate' => 'ExternalAnalytics|SiteConfig.core_javascript_template',
-		];
+		return array_merge(parent::db_to_environment_mapping($id), [
+			$this->prependId('ConversionTracking', $id) => 'Conversions_' . $id . '|ExternalAnalytics.conversion_trackers',
+		]);
 	}
 
 	public function javascript($id, ViewableData $controller, $params = [])
 	{
-		if (!$this->template) {
-			$this->template = $this->setting($id, 'JavascriptTemplate',
-				BASE_PATH . '/' . SS_EXTERNAL_ANALYTICS_DIR . '/javascript/' . 'core.track.ss.js',
-				[
-					'objects' => [$controller, $this],
-				]
-			);
-		}
-
-		singleton('assets')->utilities_js();
-		return $this->renderWithTemplate($id, $controller, $params);
+		singleton('assets')->javascript(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/' . 'core.track.js');
+		return $this->attributes($id, $controller, $params);
 	}
 } 

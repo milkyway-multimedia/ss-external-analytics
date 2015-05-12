@@ -4,6 +4,7 @@ External Analytics
 
 ## Currently supports
 * Google Analytics
+* Google Adwords
 * Mailchimp (Goals and Ecommerce360)
 
 ## Features

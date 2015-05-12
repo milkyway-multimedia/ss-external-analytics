@@ -50,8 +50,8 @@ class Driver extends AbstractDriver
 	public function db_to_environment_mapping($id)
 	{
 		return array_merge(parent::db_to_environment_mapping($id), [
-			$this->prependId('TrackingId', $id) => 'GoogleAnalytics|Google|SiteConfig.ga_tracking_id',
-			$this->prependId('JavascriptTemplate', $id) => 'GoogleAnalytics|Google|SiteConfig.ga_javascript_template',
+			$this->prependId('TrackingId', $id) => 'Statistics_' . $id . '|GoogleAnalytics|Google|SiteConfig.ga_tracking_id',
+			$this->prependId('JavascriptTemplate', $id) => 'Statistics_' . $id . '|GoogleAnalytics|Google|SiteConfig.ga_javascript_template',
 		]);
 	}
 

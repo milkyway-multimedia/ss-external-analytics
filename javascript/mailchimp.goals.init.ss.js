@@ -23,7 +23,9 @@ EA.MC.trackers = (function (trackers, mwm, EA) {
                 trackers['{$Var}'].sendEvent = function(data) {
                     var title;
 
-                    if(data.hasOwnProperty('title'))
+                    if(data.hasOwnProperty('longAction'))
+                        title = data.longAction;
+                    else if(data.hasOwnProperty('title'))
                         title = data.title;
                     else if(data.hasOwnProperty('label'))
                         title = data.label;
