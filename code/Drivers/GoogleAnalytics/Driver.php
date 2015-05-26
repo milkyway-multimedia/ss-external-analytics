@@ -73,6 +73,7 @@ class Driver extends AbstractDriver
 			);
 		}
 
+		singleton('assets')->utilities_js();
 		return $this->renderWithTemplate($id, $controller, $params);
 	}
 } 

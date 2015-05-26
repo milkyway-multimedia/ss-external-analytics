@@ -19,11 +19,13 @@
         //    else
         //        return url + '&';
         //},
-        sendConversion =     function(data) {
+        sendConversion =     function(data, trackerType) {
             if(EA && EA.hasOwnProperty('conversion_trackers')) {
                 var tracker, type, option;
 
                 for(type in EA.conversion_trackers) {
+                    if(trackerType && type !== trackerType) continue;
+
                     if(EA.conversion_trackers.hasOwnProperty(type) && EA.conversion_trackers[type].hasOwnProperty('track')) {
                         for(tracker in EA.conversion_trackers[type].track) {
                             if(EA.conversion_trackers[type].track.hasOwnProperty(tracker)) {
