@@ -16,6 +16,18 @@ Injector:
     properties:
       server: '%$GuzzleHttp\ClientInterface'
 
+  'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAdwords':
+    properties:
+      server: '%$GuzzleHttp\ClientInterface'
+
+  'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaTwitter':
+    properties:
+      server: '%$GuzzleHttp\ClientInterface'
+
+  'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaFacebook':
+    properties:
+      server: '%$GuzzleHttp\ClientInterface'
+
   RequestProcessor:
     properties:
       filters:

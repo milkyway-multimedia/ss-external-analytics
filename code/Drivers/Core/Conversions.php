@@ -11,6 +11,7 @@ use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\Driver as DriverContract;
 use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\ScriptAttribute;
 use ViewableData;
 use Convert;
+use Session;
 
 class Conversions implements ScriptAttribute {
     public function output(DriverContract $driver, $id, ViewableData $controller = null, $params = []) {
@@ -20,6 +21,18 @@ class Conversions implements ScriptAttribute {
         $trackers = (array)$driver->setting($id, 'ConversionTracking', null, [
             'objects' => [$controller],
         ]);
+
+        foreach($trackers as $event => $params) {
+            if(!is_array($params)) continue;
+
+            foreach($params as $paramName => $vars) {
+                if(!is_array($vars)) continue;
+
+                // Disable a conversion if a mission session variable is found
+                if(isset($vars['check_session_var']) && !Session::get($vars['check_session_var']))
+                    unset($trackers[$event][$paramName]);
+            }
+        }
 
         return count($trackers) ? '
             var EA = window.EA || {};

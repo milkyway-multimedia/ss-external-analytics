@@ -14,7 +14,7 @@ use League\Event\EventInterface as Event;
 class RecordViaGoogleAdwords extends HttpListener
 {
 	public function __construct() {
-		$this->url = singleton('env')->get('GoogleAdwords|ExternalAnalytics.adwords_conversion_url', 'https//www.googleadservices.com/pagead/conversion/$id?script=0');
+		$this->url = singleton('env')->get('GoogleAdwords|ExternalAnalytics.adwords_conversion_url', 'https://www.googleadservices.com/pagead/conversion/$id?script=0');
 	}
 
 	public function event(Event $e = null, $queueName = '', $params = [])

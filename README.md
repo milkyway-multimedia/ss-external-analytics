@@ -4,7 +4,7 @@ External Analytics
 
 ## Currently supports
 * Google Analytics
-* Google Adwords
+* Google Adwords (javascript only)
 * Facebook (social events and conversions)
 * Twitter (social events)
 * AddThis (social events)
@@ -34,7 +34,7 @@ Add the following to your composer.json file
 ```
 
 # IMPORTANT
-The javascript is added on the onAfterInit method for the controller. This means that in your actions you have to take care of the analytics collection before this extension is reached. This is due to Controller not having the same entry 
+The javascript is added on the onAfterInit method for the controller. This means that in your actions you have to take care of the analytics collection before this extension is reached. This is due to Controller not having the same entry point as RequestHandler
 
 To fix this, you must set in your config:
 
@@ -60,6 +60,9 @@ And add this code to your Page_Controller:
 ```
 
 This will allow you to add any additional params for external analytics in your action methods. For most implementations it's not needed however.
+
+## Limitations
+* Google Adwords does not convert server side
 
 ## License 
 * MIT

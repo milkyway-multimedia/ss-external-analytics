@@ -14,7 +14,7 @@ use League\Event\EventInterface as Event;
 class RecordViaFacebook extends HttpListener
 {
 	public function __construct() {
-		$this->url = singleton('env')->get('Facebook|ExternalAnalytics.facebook_conversion_url', 'https://facebook.com/tr?ev=$id?noscript=1');
+		$this->url = singleton('env')->get('Facebook|ExternalAnalytics.facebook_conversion_url', 'https://facebook.com/tr?ev=$id&noscript=1');
 	}
 
 	public function event(Event $e = null, $queueName = '', $params = [])

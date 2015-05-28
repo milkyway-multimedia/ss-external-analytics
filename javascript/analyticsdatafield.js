@@ -1,7 +1,8 @@
 var EA = window.EA || {};
 
 EA.dataField = (function(dataField, $) {
-	var $inputs = [];
+	var $inputs = [],
+		pageTime = +new Date();
 
 	if(!dataField.hasOwnProperty('parseSelector'))
 		dataField.parseSelector = '.analyticsdata-parser';
@@ -29,13 +30,14 @@ EA.dataField = (function(dataField, $) {
 					}
 				}
 
-				$inputs = [];
 				$done.push(name);
                 $this.data('ea:done', $done);
 
 				return true;
 			});
 		}
+
+		$inputs = [];
 	};
 
 	dataField.outputGaTracker = function(id, tracker) {
@@ -110,11 +112,10 @@ EA.dataField = (function(dataField, $) {
 			}
 		}
 
-		if(EA.hasOwnProperty('core')) {
-			$inputs.push([['pageSession'], +new Date()]);
-			dataField.render('core');
-		}
+		$inputs.push([['pageSession'], pageTime]);
 	};
+
+	dataField.render_all();
 
 	if($.hasOwnProperty('ajaxComplete')) {
 		$(document).ajaxComplete(function() {

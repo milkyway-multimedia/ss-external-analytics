@@ -12,4 +12,3 @@ Eventful:
     'ea:conversion.ea:default':
       - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaFacebook'
       - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaTwitter'
-      - 'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAdwords'
