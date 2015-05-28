@@ -1,7 +1,0 @@
----
-Name: external-analytics--facebook
----
-ExternalAnalytics:
-  conversion_trackers:
-    facebook:
-      url: 'https://facebook.com/tr?ev=$id?noscript=1'

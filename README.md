@@ -5,16 +5,19 @@ External Analytics
 ## Currently supports
 * Google Analytics
 * Google Adwords
+* Facebook (social events and conversions)
+* Twitter (social events)
+* AddThis (social events)
 * Mailchimp (Goals and Ecommerce360)
 
 ## Features
 * Insert tracking code
 * Social event tracking
-* Records length of stay on website
-* Ability to send these via forms using the AnalyticsDataField
+* Records length of stay on website/page
+* Ability to send these statistics via forms using the AnalyticsDataField
 * Event tracking, with a universal function that will send a event to all trackers
 * Ecommerce tracking
-* Plugs in to userforms
+* Plugs in to some modules including userforms
 * Non-interaction tracking (via HTTP protocols and events)
 * Ability to make the script unique on each page
 * Cached when not in dev

@@ -14,16 +14,15 @@ use League\Event\EventInterface as Event;
 class RecordViaGoogleAdwords extends HttpListener
 {
 	public function __construct() {
-		$this->url = singleton('env')->get('GoogleAdwords|ExternalAnalytics.conversion_trackers', [
-			'google_adwords' => [
-				'url' => 'https//www.googleadservices.com/pagead/conversion/$id?script=0',
-			],
-		])['google_adwords']['url'];
+		$this->url = singleton('env')->get('GoogleAdwords|ExternalAnalytics.adwords_conversion_url', 'https//www.googleadservices.com/pagead/conversion/$id?script=0');
 	}
 
 	public function event(Event $e = null, $queueName = '', $params = [])
 	{
 		$results = [];
+
+		if(isset($params['adwords']))
+			$params = $params['adwords'];
 
 		$type = isset($params['type']) ? $params['type'] : $queueName;
 		$id = isset($params['id']) ? $params['id'] : singleton('env')->get('GoogleAdwords.conversion_id_for_' . $type);
@@ -44,6 +43,10 @@ class RecordViaGoogleAdwords extends HttpListener
 	}
 
 	public function ecommerce(Event $e, $queueName, $params = []) {
+		return $this->event($e, $queueName, $params);
+	}
+
+	public function conversion(Event $e, $queueName, $params = []) {
 		return $this->event($e, $queueName, $params);
 	}
 } 

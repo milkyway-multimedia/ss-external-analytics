@@ -31,7 +31,7 @@ EA.dataField = (function(dataField, $) {
 
 				$inputs = [];
 				$done.push(name);
-                $this.data('ea.done', $done);
+                $this.data('ea:done', $done);
 
 				return true;
 			});
@@ -88,30 +88,38 @@ EA.dataField = (function(dataField, $) {
 		return '<input type="hidden" id="' + id + '-' + field.replace(/\[\]/g, '-') + '-' + name.join('-') + '" name="' + field + '[' + name.join('][') + ']' + '" value="' + val + '" />';
 	};
 
-	if(EA.hasOwnProperty('GA') && EA.GA.hasOwnProperty('trackers')) {
-		for (var trackerName in EA.GA.trackers) {
-			if (EA.GA.trackers.hasOwnProperty(trackerName)) {
-				EA.GA.trackers[trackerName].initCallbacks = EA.GA.trackers[trackerName].initCallbacks || {};
+	dataField.render_all = function() {
+		if(EA.hasOwnProperty('GA') && EA.GA.hasOwnProperty('trackers')) {
+			for (var trackerName in EA.GA.trackers) {
+				if (EA.GA.trackers.hasOwnProperty(trackerName)) {
+					EA.GA.trackers[trackerName].initCallbacks = EA.GA.trackers[trackerName].initCallbacks || {};
 
-				EA.GA.trackers[trackerName].initCallbacks.parseFields = function(trackers) {
-					if(!trackers || !trackers.length)
-						return;
+					EA.GA.trackers[trackerName].initCallbacks.parseFields = function(trackers) {
+						if(!trackers || !trackers.length)
+							return;
 
-					for (var i = 0; i < trackers.length; ++i) {
-						dataField.outputGaTracker(trackerName, trackers[i]);
+						for (var i = 0; i < trackers.length; ++i) {
+							dataField.outputGaTracker(trackerName, trackers[i]);
+						}
+					};
+
+					if(window.hasOwnProperty(trackerName) && EA.GA.trackers[trackerName].hasOwnProperty('trackers')) {
+						EA.GA.trackers[trackerName].initCallbacks.parseFields(EA.GA.trackers[trackerName].trackers);
 					}
-				};
-
-				if(window.hasOwnProperty(trackerName) && EA.GA.trackers[trackerName].hasOwnProperty('trackers')) {
-					EA.GA.trackers[trackerName].initCallbacks.parseFields(EA.GA.trackers[trackerName].trackers);
 				}
 			}
 		}
-	}
 
-	if(EA.hasOwnProperty('core')) {
-		$inputs.push([['pageSession'], +new Date()]);
-		dataField.render('core');
+		if(EA.hasOwnProperty('core')) {
+			$inputs.push([['pageSession'], +new Date()]);
+			dataField.render('core');
+		}
+	};
+
+	if($.hasOwnProperty('ajaxComplete')) {
+		$(document).ajaxComplete(function() {
+			EA.dataField.render_all();
+		});
 	}
 
 	return dataField;
