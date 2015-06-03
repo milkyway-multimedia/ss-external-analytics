@@ -26,7 +26,7 @@ EA = (function (ea) {
                 currency = details.adwords.currency || details._defaults.currency || 'AUD',
                 remarketing = details.adwords.remarketing || details._defaults.remarketing || false;
 
-            image.src = "https://www.googleadservices.com/pagead/conversion/" + details.adwords.id + "/?label=" + details.adwords.label + "&value=" + value + "&currency_code=" + currency + "&remarketing_only=" + remarketing.toString() + "&guid=ON&&script=0";
+            image.src = "https://www.googleadservices.com/pagead/conversion/" + details.adwords.id + "/?label=" + details.adwords.label + "&value=" + value + "&currency_code=" + currency + "&remarketing_only=" + remarketing.toString() + "&guid=ON";
         };
     }
 
@@ -38,7 +38,7 @@ EA = (function (ea) {
                 value = details.facebook.value || details._defaults.value || 1.00,
                 currency = details.facebook.currency || details._defaults.currency || 'AUD';
 
-            image.src = "https://www.facebook.com/tr?ev=" + details.facebook.id +"&cd[value]=" + value + "&cd[currency]=" + currency + "&noscript=1";
+            image.src = "https://www.facebook.com/tr?ev=" + details.facebook.id +"&cd[value]=" + value + "&cd[currency]=" + currency;
         };
     }
 

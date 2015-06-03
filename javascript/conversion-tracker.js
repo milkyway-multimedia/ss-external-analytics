@@ -34,14 +34,22 @@
 
                     tracking.push(type + ':' + events[i]);
 
-                    (function (data) {
+                    (function (data, currentEvent) {
                         if(!data.hasOwnProperty('_defaults'))
                             data._defaults = {};
 
-                        mwm.utilities.attachToEvent(element, events[i], function () {
+                        mwm.utilities.attachToEvent(element, currentEvent, function () {
                             EA.conversion(data);
+
+                            if(data.hasOwnProperty('_trackEvent')) {
+                                window.EA.event({
+                                    eventCategory: data._trackEvent.category ? data._trackEvent.category : currentEvent,
+                                    eventAction: data._trackEvent.action ? data._trackEvent.action : '',
+                                    eventLabel: data._trackEvent.label ? data._trackEvent.label : window.location.href
+                                });
+                            }
                         }, once);
-                    }(EA.conversion_trackers[type]));
+                    }(EA.conversion_trackers[type], events[i]));
                 }
             }
         };
