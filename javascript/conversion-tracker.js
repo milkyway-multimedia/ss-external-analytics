@@ -42,11 +42,17 @@
                             EA.conversion(data);
 
                             if(data.hasOwnProperty('_trackEvent')) {
-                                window.EA.event({
+                                var eventDetails = {
+                                    hitType: 'event',
                                     eventCategory: data._trackEvent.category ? data._trackEvent.category : currentEvent,
                                     eventAction: data._trackEvent.action ? data._trackEvent.action : '',
                                     eventLabel: data._trackEvent.label ? data._trackEvent.label : window.location.href
-                                });
+                                };
+
+                                if(data._defaults.value)
+                                    eventDetails.eventValue = data._defaults.value;
+
+                                window.EA.event(eventDetails);
                             }
                         }, once);
                     }(EA.conversion_trackers[type], events[i]));

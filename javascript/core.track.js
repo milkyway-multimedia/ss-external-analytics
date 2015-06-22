@@ -1,6 +1,6 @@
 EA = (function (ea) {
-    if(!ea.hasOwnProperty('eventTriggers'))
-        ea.eventTriggers = {};
+    if(!EA.hasOwnProperty('eventTriggers'))
+        EA.eventTriggers = {};
 
     ea.event = function(details, except) {
         if(!except || except.constructor !== Array) {

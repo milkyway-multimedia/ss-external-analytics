@@ -11,7 +11,10 @@ EA.GA.trackers = (function (trackers) {
         initCallbacks:  {},
         hitCallback:    function(){},
         sendEvent:      function(data) {
-                {$Var}('send', data);
+            if(!data.hasOwnProperty('hitType'))
+                data.hitType = 'event';
+
+            {$Var}('send', data);
         }
     };
 
