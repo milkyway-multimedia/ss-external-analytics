@@ -108,6 +108,8 @@ EA.social = (function (social, mwm) {
     mwm.utilities.attachToEvent(window, "mwm::loaded:js", social.init);
 
     mwm.utilities.attachToEvent(window, "ea::social-event", function(e, data) {
+        if(!window.EA || !EA.hasOwnProperty('event')) return;
+
         if(!data)
             data = e.detail[0];
 

@@ -1,16 +1,14 @@
 var EA = window.EA || {};
 
 EA.dataField = (function(dataField, $) {
-	var $inputs = [],
-		pageTime = +new Date();
+	var pageTime = +new Date();
 
 	if(!dataField.hasOwnProperty('parseSelector'))
 		dataField.parseSelector = '.analyticsdata-parser';
 
-	dataField.render = function(name) {
+	dataField.render = function(name, $inputs) {
 		var $fields = $(dataField.parseSelector).not('.analyticsdata-parser_processed_' + name);
 
-		if($fields.length) {
 			$fields.each(function() {
 				var $this = $(this),
 					id = this.id,
@@ -24,10 +22,12 @@ EA.dataField = (function(dataField, $) {
 				$this.removeClass('analyticsdata-parser_processing_' + name)
 					.addClass('analyticsdata-parser_processed_' + name);
 
-				if($inputs.length) {
+				if($inputs && $inputs.length) {
 					for(var i=0;i<$inputs.length;i++) {
-						$this.append(dataField.createTrackerInput(id, field, $inputs[i][0], $inputs[i][1]));
+						$this.append(dataField.createTrackerInput(id, field, $inputs[i].name, $inputs[i].value));
 					}
+
+					$this.addClass('analyticsdata-parser_processed_' + name);
 				}
 
 				$done.push(name);
@@ -35,16 +35,16 @@ EA.dataField = (function(dataField, $) {
 
 				return true;
 			});
-		}
 
 		$inputs = [];
 	};
 
-	dataField.outputGaTracker = function(id, tracker) {
+	dataField.renderGaTracker = function(id, tracker) {
 		if(!tracker) return;
 
 		var types = dataField.GA_types || {},
-			trackerName = tracker.get('name');
+			trackerName = tracker.get('name'),
+			$inputs = [];
 
 		types = $.extend({}, {
 			'referrer': 'referrer',
@@ -78,11 +78,15 @@ EA.dataField = (function(dataField, $) {
 		}, types);
 
 		for(var type in types) {
-			if(types.hasOwnProperty(type) && tracker.get(type))
-				$inputs.push([[id + '][' + trackerName, types[type]], tracker.get(type)]);
+			if(types.hasOwnProperty(type) && tracker.get(type)) {
+				$inputs.push({
+					name: [id, trackerName, types[type]],
+					value: tracker.get(type)
+				});
+			}
 		}
 
-		dataField.render(trackerName);
+		dataField.render(trackerName, $inputs);
 	};
 
 	dataField.createTrackerInput = function(id, field, name, val) {
@@ -101,7 +105,7 @@ EA.dataField = (function(dataField, $) {
 							return;
 
 						for (var i = 0; i < trackers.length; ++i) {
-							dataField.outputGaTracker(trackerName, trackers[i]);
+							dataField.renderGaTracker(trackerName, trackers[i]);
 						}
 					};
 
@@ -112,7 +116,12 @@ EA.dataField = (function(dataField, $) {
 			}
 		}
 
-		$inputs.push([['pageSession'], pageTime]);
+		dataField.render('_core', [
+			{
+				name: ['pageSession'],
+				value: pageTime
+			}
+		]);
 	};
 
 	dataField.render_all();
