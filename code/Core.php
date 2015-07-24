@@ -37,7 +37,7 @@ class Core {
 		if($this->loadedInConfigurationDefaults) return;
 
 		$this->configuration = singleton('env')->get('ExternalAnalytics.json_configuration');
-		$this->loadedInConfigurationDefaults;
+		$this->loadedInConfigurationDefaults = true;
 	}
 
 	public function executeDrivers($callback) {

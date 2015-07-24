@@ -26,9 +26,10 @@ class Errors implements DriverAttribute {
 
 		singleton('ea')->configure('GA.configuration.' . $id . '.attributes.send', [
 			[
-				$response->getStatusCode() < 500 ? 'exception' : 'fatalException',
+				'exception',
 				(array)$driver->setting($id, 'ErrorSettings', [
-					'exDescription' => _t('ErrorPage.' . $response->getStatusCode(), $response->getStatusCode())
+					'exDescription' => _t('ErrorPage.' . $response->getStatusCode(), $response->getStatusCode()),
+					'exFatal' => $response->getStatusCode() < 500,
 				], ['objects' => [$driver]]),
 			],
 		]);
