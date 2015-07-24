@@ -1,6 +1,0 @@
----
-Name: google-analytics--routes
----
-Director:
-  rules:
-    '__analytics': 'Milkyway\SS\ExternalAnalytics\Controller'

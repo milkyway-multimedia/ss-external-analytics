@@ -8,13 +8,14 @@
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
+use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\Initiates;
 use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\ManagesFields;
 use Milkyway\SS\ExternalAnalytics\Drivers\Model\Driver as AbstractDriver;
 use ViewableData;
 use ClassInfo;
 use SiteConfig;
 
-class Driver extends AbstractDriver implements ManagesFields
+class Driver extends AbstractDriver implements ManagesFields, Initiates
 {
 	public function title($id)
 	{
@@ -100,5 +101,13 @@ class Driver extends AbstractDriver implements ManagesFields
 		}
 
 		return parent::getOtherDefaultForSetting($setting, $id);
+	}
+
+	protected $init = false;
+
+	public function init() {
+		if($this->init) return;
+		singleton('assets')->javascript(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/mailchimp.js');
+		$this->init = true;
 	}
 } 

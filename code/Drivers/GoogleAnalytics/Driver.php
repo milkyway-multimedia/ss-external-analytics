@@ -8,15 +8,15 @@
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
+use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\Initiates;
 use Milkyway\SS\ExternalAnalytics\Drivers\Model\Driver as AbstractDriver;
-use ViewableData;
 
 use Milkyway\SS\Utilities;
 use Member;
 use RandomGenerator;
 use Cookie;
 
-class Driver extends AbstractDriver
+class Driver extends AbstractDriver implements Initiates
 {
 	public static function session_user_id($var) {
 		if (Member::currentUserID()) return Member::currentUserID();
@@ -55,25 +55,11 @@ class Driver extends AbstractDriver
 		]);
 	}
 
-	public function javascript($id, ViewableData $controller = null, $params = [])
-	{
-		$params = array_merge(['TrackingId' => $this->setting($id, 'TrackingId', null, [
-			'objects' => [$controller, $this]
-		])], $params);
+	protected $init = false;
 
-		if (!$params['TrackingId'])
-			return '';
-
-		if (!$this->template) {
-			$this->template = $this->setting($id, 'JavascriptTemplate',
-				BASE_PATH . '/' . SS_EXTERNAL_ANALYTICS_DIR . '/javascript/' . 'google-analytics.track.init.ss.js',
-				[
-					'objects' => [$controller, $this],
-				]
-			);
-		}
-
-		singleton('assets')->utilities_js();
-		return $this->renderWithTemplate($id, $controller, $params);
+	public function init() {
+		if($this->init) return;
+		singleton('assets')->javascript(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/google-analytics.js');
+		$this->init = true;
 	}
 } 

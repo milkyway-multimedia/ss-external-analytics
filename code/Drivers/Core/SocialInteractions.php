@@ -8,13 +8,20 @@
  */
 
 use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\Driver as DriverContract;
-use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\ScriptAttribute;
-use ViewableData;
+use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\DriverAttribute;
 
-class SocialInteractions implements ScriptAttribute {
-    public function output(DriverContract $driver, $id, ViewableData $controller = null, $params = []) {
-	    singleton('assets')->utilities_js();
+use SS_HTTPRequest as Request;
+use SS_HTTPResponse as Response;
+use Session;
+use DataModel;
+
+class SocialInteractions implements DriverAttribute {
+    public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel) {
+        singleton('assets')->utilities_js();
         singleton('assets')->javascript(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/social-tracker.js');
-        return '';
     }
-} 
+
+    public function postRequest(DriverContract $driver, $id, Request $request, Response $response, DataModel $model) {
+
+    }
+}

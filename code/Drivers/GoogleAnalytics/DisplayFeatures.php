@@ -8,30 +8,27 @@
  */
 
 use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\Driver as DriverContract;
-use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\ScriptAttribute;
-use ViewableData;
+use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\DriverAttribute;
 
-class DisplayFeatures implements ScriptAttribute {
-	public function output(DriverContract $driver, $id, ViewableData $controller = null, $params = []) {
-		$script = '';
+use SS_HTTPRequest as Request;
+use SS_HTTPResponse as Response;
+use Session;
+use DataModel;
 
-		$params = array_merge([
-			'display_features' => singleton('env')->get('GoogleAnalytics.ga_enable_display_features', true),
-		], $params);
+class DisplayFeatures implements DriverAttribute {
+	public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel) {
+		$args = ['displayfeatures'];
 
-		if($controller) {
-			$controller->extend('updateExternalAnalyticsDisplayFeaturesParams', $params, $driver, $id);
-			$controller->extend('updateGoogleAnalyticsDisplayFeaturesParams', $params, $driver, $id);
+		if($settings = $driver->setting($id, 'DisplayFeatureSettings', null, ['objects' => [$driver]])) {
+			$args[] = $settings;
 		}
 
-		if(isset($params['display_features']) && $params['display_features'])
-			$script = $id . "('require', 'displayfeatures');\n";
-
-		if($controller) {
-			$controller->extend('onExternalAnalyticsDisplayFeatures', $output, $driver, $id, $params, $script);
-			$controller->extend('onGoogleAnalyticsDisplayFeatures', $output, $driver, $id, $params, $script);
-		}
-
-		return $script;
+		singleton('ea')->configure('GA.configuration.' . $id . '.attributes.require', [
+			$args,
+		]);
 	}
-} 
+
+	public function postRequest(DriverContract $driver, $id, Request $request, Response $response, DataModel $model) {
+
+	}
+}

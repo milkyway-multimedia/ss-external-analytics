@@ -32,3 +32,4 @@ Injector:
     properties:
       filters:
         - '%$Milkyway\SS\ExternalAnalytics\Api\CollectSessionVariables'
+        - '%$Milkyway\SS\ExternalAnalytics\Api\JsonConfiguration'

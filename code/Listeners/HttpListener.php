@@ -7,7 +7,7 @@
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
-use SS_HTTPResponse;
+use SS_HTTPResponse as Response;
 use Debug;
 
 
@@ -25,10 +25,12 @@ abstract class HttpListener {
 			$params
 		);
 
-		$isError = (new SS_HTTPResponse($response->getBody()->getContents(), $response->getStatusCode(), $response->getReasonPhrase()))->isError();
+		$isError = (new Response($response->getBody()->getContents(), $response->getStatusCode(), $response->getReasonPhrase()))->isError();
 
-		if($isError)
-			Debug::message(sprintf('Action with url: %s came back with status code: %s', $response->getEffectiveUrl(), $response->getStatusCode()));
+		if((new Response($response->getBody()->getContents(), $response->getStatusCode(), $response->getReasonPhrase()))->isError()) {
+			Debug::message(sprintf('Action with url: %s came back with status code: %s', $response->getEffectiveUrl(),
+				$response->getStatusCode()));
+		}
 
 		return !$isError;
 	}

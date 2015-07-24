@@ -8,21 +8,21 @@
  */
 
 use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\Driver as DriverContract;
-use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\ScriptAttribute;
-use ViewableData;
-use Convert;
-use Session;
+use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\DriverAttribute;
 
-class Conversions implements ScriptAttribute {
-    public function output(DriverContract $driver, $id, ViewableData $controller = null, $params = []) {
+use SS_HTTPRequest as Request;
+use SS_HTTPResponse as Response;
+use Session;
+use DataModel;
+
+class Conversions implements DriverAttribute {
+    public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel) {
         singleton('assets')->utilities_js();
         singleton('assets')->javascript(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/conversion-tracker.js');
 
-        $trackers = (array)$driver->setting($id, 'ConversionTracking', null, [
-            'objects' => [$controller],
-        ]);
+        $conversions = (array)$driver->setting($id, 'ConversionTracking', []);
 
-        foreach($trackers as $event => $params) {
+        foreach($conversions as $event => $params) {
             if(!is_array($params)) continue;
 
             foreach($params as $paramName => $vars) {
@@ -30,14 +30,24 @@ class Conversions implements ScriptAttribute {
 
                 // Disable a conversion if a mission session variable is found
                 if(isset($vars['check_session_var']) && !Session::get($vars['check_session_var']))
-                    unset($trackers[$event][$paramName]);
+                    unset($conversions[$event][$paramName]);
             }
         }
 
-        return count($trackers) ? '
-            var EA = window.EA || {};
+        if(count($conversions)) {
+            singleton('ea')->configure('conversions', $conversions);
+        }
+    }
 
-            EA.conversion_trackers = ' . Convert::raw2json($trackers) . '
-        ' : '';
+    public function postRequest(DriverContract $driver, $id, Request $request, Response $response, DataModel $model) {
+        $rawConversions = singleton('ea')->unqueue('conversion');
+        $conversions = [];
+
+        foreach ($rawConversions as $options) {
+            $events[] = $options;
+        }
+
+        if(count($conversions))
+            singleton('ea')->configure('conversions', $conversions);
     }
 } 

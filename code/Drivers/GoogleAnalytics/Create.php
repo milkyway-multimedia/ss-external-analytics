@@ -8,20 +8,29 @@
  */
 
 use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\Driver as DriverContract;
-use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\ScriptAttribute;
-use ViewableData;
+use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\DriverAttribute;
 
-class Create implements ScriptAttribute {
-	public function output(DriverContract $driver, $id, ViewableData $controller = null, $params = []) {
-		if($trackingId = $driver->setting($id, 'TrackingId', null, ['objects' => [$controller, $driver]])) {
-			$create = isset($params['create']) ? (array)$params['create'] : [];
-			$create['clientId'] = Driver::session_user_id($id);
+use SS_HTTPRequest as Request;
+use SS_HTTPResponse as Response;
+use Session;
+use DataModel;
 
-			$create = count($create) ? ', ' . json_encode(array_filter($create)) : '';
+class Create implements DriverAttribute {
+	public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel) {
+		if($trackingId = $driver->setting($id, 'TrackingId', null, ['objects' => [$driver]])) {
+			$args = [$trackingId];
 
-			return $id . "('create', '$trackingId'{$create});";
+			if($settings = $driver->setting($id, 'PageViewSettings', 'auto', ['objects' => [$driver]])) {
+				$args[] = $settings;
+			}
+
+			singleton('ea')->configure('GA.configuration.' . $id . '.attributes.create', [
+				$args,
+			]);
 		}
-
-		return '';
 	}
-} 
+
+	public function postRequest(DriverContract $driver, $id, Request $request, Response $response, DataModel $model) {
+
+	}
+}

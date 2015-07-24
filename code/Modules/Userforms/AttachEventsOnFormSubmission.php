@@ -11,14 +11,14 @@ use Milkyway\SS\ExternalAnalytics\Modules\Model\FireEvent;
 
 class AttachEventsOnFormSubmission extends FireEvent {
 	public function updateEmailData() {
-		$this->fire(true);
+		$this->fire();
 	}
 
 	protected function params() {
 		return array_merge([
-			'category' => 'forms',
+			'category' => 'userforms',
 			'action' => 'submitted',
-			'label' => $this->owner->Title,
+			'label' => $this->owner->Title . '(ID: ' . $this->owner->ID . ')',
 			'value' => singleton('env')->get('Userforms|ExternalAnalytics.conversion_value', 1),
 		], (array)$this->owner->ExternalAnalyticsParams);
 	}

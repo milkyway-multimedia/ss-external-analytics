@@ -8,61 +8,53 @@
  */
 
 use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\Driver as DriverContract;
-use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\ScriptAttribute;
-use ViewableData;
+use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\DriverAttribute;
 
-class Ecommerce implements ScriptAttribute {
-	protected static $send_ecommerce = false;
+use SS_HTTPRequest as Request;
+use SS_HTTPResponse as Response;
+use Session;
+use DataModel;
 
-	public function output(DriverContract $driver, $id, ViewableData $controller = null, $params = []) {
-		$script = '';
+class Ecommerce implements DriverAttribute {
+	public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel) {
+		$args = ['ecommerce'];
 
-		if($controller) {
-			$controller->extend('updateExternalAnalyticsEcommerceParams', $params, $driver, $id);
-			$controller->extend('updateGoogleAnalyticsEcommerceParams', $params, $driver, $id);
+		if($settings = $driver->setting($id, 'EcommerceSettings', null, ['objects' => [$driver]])) {
+			$args[] = $settings;
 		}
 
-		if(isset($params['ecommerce']) && $params['ecommerce'])
-			$script = $id . "('require', 'ec');\n";
-
-		$output = [];
-		$orders = isset($params['ecommerce']) ? (array)$params['ecommerce'] : [];
-		$events = array_merge((array)singleton('ea')->unqueue('ecommerce'), $orders);
-
-		foreach ($events as $type => $options) {
-			if($event = $this->createEvent($options, $type)) {
-				if($type == 'setAction') {
-					$eventType = $event['eventAction'];
-					unset($event['eventAction']);
-					$event = json_encode($event);
-					$output[] = $id . "('ec:$type', $eventType, $event);";
-				}
-				else {
-					$event = json_encode($event);
-					$output[] = $id . "('ec:$type', $event);";
-				}
-			}
-		}
-
-		if($controller) {
-			$controller->extend('onExternalAnalyticsEcommerce', $output, $driver, $id, $params, $script);
-			$controller->extend('onGoogleAnalyticsEcommerce', $output, $driver, $id, $params, $script);
-		}
-
-		if(count($output)) {
-			static::$send_ecommerce = true;
-			$script .= implode("\n", $output);
-		}
-
-		if(static::$send_ecommerce) {
-			$script .= $id . "('ecommerce:send');\n";
-		}
-
-		return $script;
+		singleton('ea')->configure('GA.configuration.' . $id . '.attributes.require', [
+			$args,
+		]);
 	}
 
-	public static function set_send_ecommerce($flag = true) {
-		static::$send_ecommerce = $flag;
+	public function postRequest(DriverContract $driver, $id, Request $request, Response $response, DataModel $model) {
+		$events = singleton('ea')->unqueue('ecommerce', $id);
+
+		foreach ($events as $type => $options) {
+			$event = $this->createEvent($options, $type);
+
+			if(!count($event)) continue;
+
+			if($type == 'setAction') {
+				$eventType = $event['eventAction'];
+				unset($event['eventAction']);
+
+				singleton('ea')->configure('GA.configuration.' . $id . '.attributes.ec:' . $type, [
+					[
+						$eventType,
+					    $event
+					],
+				]);
+			}
+			else {
+				singleton('ea')->configure('GA.configuration.' . $id . '.attributes.ec:' . $type, [
+					[
+						$event
+					],
+				]);
+			}
+		}
 	}
 
 	protected function createEvent($params = [], $type = 'addImpression')
@@ -74,4 +66,4 @@ class Ecommerce implements ScriptAttribute {
 
 		return $settings;
 	}
-} 
+}

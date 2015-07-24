@@ -7,4 +7,5 @@ ExternalAnalytics:
       driver: 'Milkyway\SS\ExternalAnalytics\Drivers\Core\Driver'
       attributes:
         - 'Milkyway\SS\ExternalAnalytics\Drivers\Core\Conversions'
+        - 'Milkyway\SS\ExternalAnalytics\Drivers\Core\Events'
         - 'Milkyway\SS\ExternalAnalytics\Drivers\Core\SocialInteractions'

@@ -12,10 +12,7 @@ namespace Milkyway\SS\ExternalAnalytics\Drivers\Model;
 use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\Driver as Contract;
 use ClassInfo;
 use SiteConfig;
-use ArrayData;
-use SSViewer;
-use Permission;
-use ViewableData;
+use DB;
 
 abstract class Driver implements Contract {
 	protected $template;
@@ -43,6 +40,11 @@ abstract class Driver implements Contract {
 		$callbacks = [];
 
 		if(ClassInfo::exists('SiteConfig')) {
+			if(!DB::isActive()) {
+				global $databaseConfig;
+				if ($databaseConfig) DB::connect($databaseConfig);
+			}
+
 			$siteConfig = SiteConfig::current_site_config();
 
 			$callbacks['SiteConfig'] = function($keyParts, $key) use($id, $setting, $siteConfig) {
@@ -55,59 +57,6 @@ abstract class Driver implements Contract {
 			'beforeConfigNamespaceCheckCallbacks' => $callbacks,
 			'mapping' => $this->db_to_environment_mapping($id),
 		], $params));
-	}
-
-	protected function renderWithTemplate($id, ViewableData $controller = null, $params = []) {
-		$params = array_merge(
-			(array)$this->configuration($id),
-			[
-				'Var' => $id,
-				'Attributes' => $this->attributes($id, $controller, $params),
-			],
-			$params
-		);
-
-		if ($this->template && !is_array($this->template) && substr($this->template, -3) === '.js') {
-			if (isset($_GET['showtemplate']) && $_GET['showtemplate'] && Permission::check('ADMIN')) {
-				$lines = file($this->template);
-				echo "<h2>Template: $this->template</h2>";
-				echo "<pre>";
-				foreach ($lines as $num => $line) {
-					echo str_pad($num + 1, 5) . htmlentities($line, ENT_COMPAT, 'UTF-8');
-				}
-				echo "</pre>";
-			}
-
-			$template = SSViewer::execute_string(file_get_contents($this->template), ArrayData::create($params));
-		} else
-			$template = ArrayData::create($params)->renderWith($this->template);
-
-		$params = array_filter($params, function($value) {
-			return is_string($value) || is_numeric($value);
-		});
-
-		return str_replace(array_map(function($key) {
-			return '{{ ' . strtolower($key) . ' }}';
-		}, array_keys($params)), $params, $template);
-	}
-
-	protected function attributes($id, ViewableData $controller = null, $params = []) {
-		$output = [];
-
-		foreach(array_diff(
-			        (array)$this->configuration($id)['attributes'],
-			        (array)$this->configuration($id)['disabled_attributes'],
-			        (array)$this->setting($id, 'DisabledScriptAttributes')
-		        ) as $class) {
-			$output[] = \Object::create($class)->output($this, $id, $controller, $params);
-		}
-
-		$output = array_filter($output);
-
-		if($controller)
-			$controller->extend('updateExternalAnalyticsAttributes', $output, $this, $id, $controller, $params);
-
-		return count($output) ? trim(implode("\n", $output)) : '';
 	}
 
 	protected function prependId($content, $id) {

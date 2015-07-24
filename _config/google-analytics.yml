@@ -9,9 +9,8 @@ ExternalAnalytics:
         - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Create'
         - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\DisplayFeatures'
         - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Ecommerce'
-        - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Events'
         - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Errors'
-        - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\Send'
+        - 'Milkyway\SS\ExternalAnalytics\Drivers\GoogleAnalytics\PageView'
 
   get_vars_to_session:
     'ga.utm_campaign':

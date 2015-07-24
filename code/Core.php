@@ -1,7 +1,8 @@
 <?php namespace Milkyway\SS\ExternalAnalytics;
+
 /**
  * Milkyway Multimedia
- * GoogleAnalytics.php
+ * Core.php
  *
  * @package milkywaymultimedia.com.au
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
@@ -9,9 +10,39 @@
 
 use RequestHandler;
 use Config;
+use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\Driver;
 
 class Core {
+	protected $configuration = [];
+	protected $loadedInConfigurationDefaults = false;
+
+	public function configuration() {
+		$this->loadInConfigurationDefaults();
+		return $this->configuration;
+	}
+
+	public function configure($name, $value = null) {
+		$this->loadInConfigurationDefaults();
+		$currentValue = array_get($this->configuration, $name);
+		if(is_array($currentValue)) {
+			array_set($this->configuration, $name, array_merge($currentValue, (array)$value));
+		}
+		else {
+			array_set($this->configuration, $name, $value);
+		}
+		return $this->configuration();
+	}
+
+	protected function loadInConfigurationDefaults() {
+		if($this->loadedInConfigurationDefaults) return;
+
+		$this->configuration = singleton('env')->get('ExternalAnalytics.json_configuration');
+		$this->loadedInConfigurationDefaults;
+	}
+
 	public function executeDrivers($callback) {
+		$output = [];
+
 		foreach(array_diff_key(
 			        (array)singleton('env')->get('ExternalAnalytics.enabled', [], [
 				        'on' => Config::FIRST_SET
@@ -20,15 +51,54 @@ class Core {
 				        'on' => Config::FIRST_SET
 			        ]))
 		        ) as $id => $options) {
-			$callback(\Object::create($options['driver']), $id);
+			$output[] = $callback(singleton($options['driver']), $id);
 		}
+
+		return array_filter($output);
+	}
+
+	public function executeDriverAttributes($callback, Driver $driver = null, $driverId = '', $params = []) {
+		if($driver && $driverId)
+			return $this->handleAttributes($callback, $driver, $driverId, $params);
+
+		$output = [];
+
+		$this->executeDrivers(function(Driver $driver, $id) use($callback, $params, $output) {
+			$output[] = $this->handleAttributes($callback, $driver, $id, $params);
+		});
+
+		return array_filter($output);
+	}
+
+	protected function handleAttributes($callback, Driver $driver, $id, $params = []) {
+		$output = [];
+
+		foreach(array_diff(
+			        (array)$driver->configuration($id)['attributes'],
+			        (array)$driver->configuration($id)['disabled_attributes'],
+			        (array)$driver->setting($id, 'DisabledScriptAttributes')
+		        ) as $class) {
+			$output[] = $callback(singleton($class), $driver, $id, $params);
+		}
+
+		return array_filter($output);
 	}
 
 	protected $_queue = [];
 	protected $_unqueuedFor = [];
 
+	public function fireAllQueues() {
+		foreach($this->_queue as $queue => $items) {
+			foreach($items as $item) {
+				singleton('Eventful')->fire('ea:'.$queue, $queue, $item);
+			}
+		}
+
+		$this->clearQueue();
+	}
+
 	public function queue($queue, $params = [], $id = '', RequestHandler $controller = null, $recordViaServer = false) {
-		if($recordViaServer || ($controller && $controller->Request && $controller->Request->isAjax())) {
+		if($recordViaServer) {
 			singleton('Eventful')->fire('ea:'.$queue, $queue, $params, $controller);
 			return;
 		}

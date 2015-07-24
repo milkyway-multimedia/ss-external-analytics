@@ -29,10 +29,4 @@ class Driver extends AbstractDriver
 			$this->prependId('ConversionTracking', $id) => 'Conversions_' . $id . '|ExternalAnalytics.conversion_trackers',
 		]);
 	}
-
-	public function javascript($id, ViewableData $controller, $params = [])
-	{
-		singleton('assets')->javascript(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/' . 'core.track.js');
-		return $this->attributes($id, $controller, $params);
-	}
 } 

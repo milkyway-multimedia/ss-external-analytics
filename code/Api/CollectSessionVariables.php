@@ -1,7 +1,8 @@
 <?php namespace Milkyway\SS\ExternalAnalytics\Api;
+
 /**
  * Milkyway Multimedia
- * TimingsRequestFilter.php
+ * CollectSessionVariables.php
  *
  * @package milkywaymultimedia.com.au
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
