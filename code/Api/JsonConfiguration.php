@@ -16,6 +16,7 @@ use SS_HTTPRequest as Request;
 use SS_HTTPResponse as Response;
 use Session;
 use DataModel;
+use Config;
 
 class JsonConfiguration implements RequestFilter
 {
@@ -135,12 +136,12 @@ class JsonConfiguration implements RequestFilter
         }
 
         $disallowedUrls = singleton('env')->get('ExternalAnalytics.disallowed_urls', [
-            '/^admin/',
+            '/^' . Config::inst()->get('AdminRootController', 'url_base') . '/',
         ]);
         $url = $request->getUrl(true);
 
         foreach($disallowedUrls as $disallowedUrl) {
-            if(preg_match($disallowedUrl, $url) !== false)
+            if(preg_match($disallowedUrl, $url) === 1)
                 return false;
         }
 
