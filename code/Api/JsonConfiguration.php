@@ -134,6 +134,16 @@ class JsonConfiguration implements RequestFilter
             return false;
         }
 
+        $disallowedUrls = singleton('env')->get('ExternalAnalytics.disallowed_urls', [
+            '/^admin/',
+        ]);
+        $url = $request->getUrl(true);
+
+        foreach($disallowedUrls as $disallowedUrl) {
+            if(preg_match($disallowedUrl, $url) !== false)
+                return false;
+        }
+
         if (!$response) {
             return true;
         }
