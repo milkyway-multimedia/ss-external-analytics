@@ -17,6 +17,7 @@ use SS_HTTPResponse as Response;
 use Session;
 use DataModel;
 use Config;
+use Director;
 
 class JsonConfiguration implements RequestFilter
 {
@@ -120,6 +121,9 @@ class JsonConfiguration implements RequestFilter
             return false;
         }
 
+        if (Director::is_cli())
+            return false;
+
         if (!singleton('env')->get('ExternalAnalytics.allowed_media', false) && $request->isMedia()) {
             return true;
         }
@@ -136,7 +140,7 @@ class JsonConfiguration implements RequestFilter
         }
 
         $disallowedUrls = singleton('env')->get('ExternalAnalytics.disallowed_urls', [
-            '/^' . Config::inst()->get('AdminRootController', 'url_base') . '/',
+            '/^(' . Config::inst()->get('AdminRootController', 'url_base') . '|dev)/',
         ]);
         $url = $request->getUrl(true);
 
