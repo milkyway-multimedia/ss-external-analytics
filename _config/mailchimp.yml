@@ -7,6 +7,7 @@ ExternalAnalytics:
       driver: 'Milkyway\SS\ExternalAnalytics\Drivers\Mailchimp\Driver'
       attributes:
         - 'Milkyway\SS\ExternalAnalytics\Drivers\Mailchimp\Create'
+        - 'Milkyway\SS\ExternalAnalytics\Drivers\Mailchimp\Ecommerce'
 
   get_vars_to_session:
     'mc.campaign_id':

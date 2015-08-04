@@ -1,63 +1,63 @@
 <?php namespace Milkyway\SS\ExternalAnalytics\Drivers\Mailchimp;
+
 /**
  * Milkyway Multimedia
- * Ecommerce.php
+ * Create.php
  *
  * @package milkywaymultimedia.com.au
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
 use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\Driver as DriverContract;
-use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\ScriptAttribute;
-use ViewableData;
+use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\DriverAttribute;
 
-class Ecommerce implements ScriptAttribute {
-	public function output(DriverContract $driver, $id, ViewableData $controller = null, $params = []) {
-		$script = '';
+use SS_HTTPRequest as Request;
+use SS_HTTPResponse as Response;
+use Session;
+use DataModel;
+use Member;
 
-		if($controller) {
-			$controller->extend('updateExternalAnalyticsEcommerceParams', $params, $driver, $id);
-		}
+class Ecommerce implements DriverAttribute
+{
+    public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel)
+    {
+        if ($apiKey = $driver->setting($id, 'ApiKey', null, ['objects' => [$driver]])) {
 
-		$orders = (array)singleton('ea')->unqueue('ecommerce');
+            $settings = $driver->setting($id, 'EcommerceSettings', [], ['objects' => [$driver]]);
+            $apiKeyParts = explode('-', $apiKey);
 
-		if(count($orders)) {
+            $config = [
+//                'apikey'     => $apiKey,
+                'dc'         => $driver->setting($id, 'dc', array_pop($apiKeyParts), [
+                    'objects' => [$driver],
+                ]),
+                'store_id'   => $driver->setting($id, 'StoreId'),
+                'store_name' => $driver->setting($id, 'StoreName'),
+            ];
 
-			$configParams = [
-				'objects' => [$controller, $this]
-			];
-			$orderDefaults = [
-					'driver_id' => $id,
-					'store_id' => $driver->setting($id, 'StoreId', null, $configParams),
-					'store_name' => $driver->setting($id, 'StoreName', null, $configParams),
-			];
+            if($session->get('mc.email_id'))
+                $config['email_id'] = $session->get('mc.email_id');
+            else if(Member::currentUser() && Member::currentUser()->Email) {
+                $config['email'] = Member::currentUser()->Email;
+            }
 
-			foreach ($orders as $type => $options) {
-				$order = array_merge($orderDefaults, $options);
+            if($session->get('mc.campaign_id'))
+                $params['campaign_id'] = Session::get('mc.campaign_id');
 
-				if (!isset($order['id'])) {
-					$order['id'] = $type;
+            singleton('ea')->configure('MC.configuration.' . $id, array_merge($config, $settings));
+        }
+    }
 
-					singleton('Milkyway\SS\ExternalAnalytics\Listeners\RecordViaEcommerce360')
-						->ecommerce(null, 'ecommerce', $order);
-				}
-			}
-		}
+    public function postRequest(DriverContract $driver, $id, Request $request, Response $response, DataModel $model)
+    {
+        // Currently Ecommerce360 does not seem to work with AJAX.
+        // Hijacking the ecommerce array to still send transactions.
+        $configuration = singleton('ea')->configuration();
 
-		if($controller) {
-			$controller->extend('onExternalAnalyticsEcommerce', $output, $driver, $id, $params, $script);
-		}
-
-		return $script;
-	}
-
-	protected function createEvent($params = [], $type = 'addImpression')
-	{
-		$settings = ($type == 'setAction') ? ['eventAction' => 'click'] : [];
-
-		if (is_array($params))
-			$settings = array_merge($params, $settings);
-
-		return $settings;
-	}
-} 
+        if(isset($configuration['shop'])) {
+            foreach($configuration['shop'] as $transaction) {
+                singleton('Milkyway\SS\ExternalAnalytics\Listeners\RecordViaEcommerce360')->ecommerce(null, 'transaction', $transaction);
+            }
+        }
+    }
+}

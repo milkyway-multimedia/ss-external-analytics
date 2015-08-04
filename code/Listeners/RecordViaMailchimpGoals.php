@@ -71,4 +71,12 @@ class RecordViaMailchimpGoals extends HttpListener
 
 		return $results;
 	}
+
+	public function ecommerce(Event $e, $queueName, $params = [])
+	{
+		if(isset($params['action']) && in_array($params['action'], ['transaction', 'refund']))
+			return $this->event($e, $queueName, $params);
+
+		return [];
+	}
 } 

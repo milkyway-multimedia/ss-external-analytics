@@ -59,7 +59,8 @@ class Driver extends AbstractDriver implements Initiates
 
 	public function init() {
 		if($this->init) return;
-		singleton('assets')->javascript(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/google-analytics.js');
+		singleton('require')->utilities_js();
+		singleton('require')->add(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/google-analytics.js');
 		$this->init = true;
 	}
 } 

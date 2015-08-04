@@ -10,6 +10,7 @@
 use SS_HTTPResponse as Response;
 use Debug;
 
+use Exception;
 
 abstract class HttpListener {
 	/* @var string */
@@ -20,16 +21,22 @@ abstract class HttpListener {
 
 	protected function request($params = [], $type = 'post')
 	{
-		$response = $this->server->$type(
-			$this->url(),
-			$params
-		);
+		$isError = true;
 
-		$isError = (new Response($response->getBody()->getContents(), $response->getStatusCode(), $response->getReasonPhrase()))->isError();
+		try {
+			$response = $this->server->$type(
+				$this->url(),
+				$params
+			);
 
-		if((new Response($response->getBody()->getContents(), $response->getStatusCode(), $response->getReasonPhrase()))->isError()) {
-			Debug::message(sprintf('Action with url: %s came back with status code: %s', $response->getEffectiveUrl(),
-				$response->getStatusCode()));
+			$isError = (new Response($response->getBody()->getContents(), $response->getStatusCode(), $response->getReasonPhrase()))->isError();
+
+			if((new Response($response->getBody()->getContents(), $response->getStatusCode(), $response->getReasonPhrase()))->isError()) {
+				Debug::message(sprintf('Action with url: %s came back with status code: %s', $response->getEffectiveUrl(),
+					$response->getStatusCode()));
+			}
+		} catch(Exception $e) {
+			Debug::message($e->getMessage());
 		}
 
 		return !$isError;

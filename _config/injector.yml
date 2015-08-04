@@ -16,6 +16,10 @@ Injector:
     properties:
       server: '%$GuzzleHttp\ClientInterface'
 
+  'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaEcommerce360':
+    properties:
+      server: '%$GuzzleHttp\ClientInterface'
+
   'Milkyway\SS\ExternalAnalytics\Listeners\RecordViaGoogleAdwords':
     properties:
       server: '%$GuzzleHttp\ClientInterface'

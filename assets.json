@@ -21,13 +21,20 @@
     },
     {
       "src"  : [
+        "bower_components/assets/javascript/external-analytics/ecommerce.js"
+      ],
+      "dest" : "javascript/ecommerce-tracker.js"
+    },
+    {
+      "src"  : [
         "bower_components/assets/javascript/**/analyticsdatafield.js"
       ],
       "dest" : "javascript/analyticsdatafield.js"
     },
     {
       "src"  : [
-        "bower_components/assets/javascript/external-analytics/google-analytics/*.js"
+        "bower_components/assets/javascript/external-analytics/google-analytics/*.js",
+        "!bower_components/assets/javascript/external-analytics/google-analytics/analyticsdatafield.js"
       ],
       "dest" : "javascript/google-analytics.js"
     },

@@ -19,16 +19,14 @@ class Create implements DriverAttribute {
 	public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel) {
 		if($uuId = $driver->setting($id, 'UUId', null, ['objects' => [$driver]])) {
 
-			if($settings = $driver->setting($id, 'PageViewSettings', 'auto', ['objects' => [$driver]])) {
-				$args[] = $settings;
-			}
+			$settings = $driver->setting($id, 'PageViewSettings', [], ['objects' => [$driver]]);
 
-			singleton('ea')->configure('MC.configuration.' . $id, [
+			singleton('ea')->configure('MC.configuration.' . $id, array_merge([
 				'uuid' => $uuId,
-				'dc' => $this->setting($id, 'dc', 'us1', [
+				'dc' => $driver->setting($id, 'dc', 'us1', [
 					'objects' => [$driver]
 				]),
-			]);
+			], $settings));
 		}
 	}
 

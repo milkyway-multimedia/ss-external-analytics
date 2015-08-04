@@ -17,7 +17,7 @@ use DataModel;
 
 class Ecommerce implements DriverAttribute {
 	public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel) {
-		$args = ['ecommerce'];
+		$args = ['ec'];
 
 		if($settings = $driver->setting($id, 'EcommerceSettings', null, ['objects' => [$driver]])) {
 			$args[] = $settings;
@@ -29,41 +29,6 @@ class Ecommerce implements DriverAttribute {
 	}
 
 	public function postRequest(DriverContract $driver, $id, Request $request, Response $response, DataModel $model) {
-		$events = singleton('ea')->unqueue('ecommerce', $id);
 
-		foreach ($events as $type => $options) {
-			$event = $this->createEvent($options, $type);
-
-			if(!count($event)) continue;
-
-			if($type == 'setAction') {
-				$eventType = $event['eventAction'];
-				unset($event['eventAction']);
-
-				singleton('ea')->configure('GA.configuration.' . $id . '.attributes.ec:' . $type, [
-					[
-						$eventType,
-					    $event
-					],
-				]);
-			}
-			else {
-				singleton('ea')->configure('GA.configuration.' . $id . '.attributes.ec:' . $type, [
-					[
-						$event
-					],
-				]);
-			}
-		}
-	}
-
-	protected function createEvent($params = [], $type = 'addImpression')
-	{
-		$settings = ($type == 'setAction') ? ['eventAction' => 'click'] : [];
-
-		if (is_array($params))
-			$settings = array_merge($params, $settings);
-
-		return $settings;
 	}
 }
