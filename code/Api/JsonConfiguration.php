@@ -2,9 +2,9 @@
 
 /**
  * Milkyway Multimedia
- * JsConfiguration.php
+ * JsonConfiguration.php
  *
- * @package milkywaymultimedia.com.au
+ * @package milkyway-multimedia/ss-external-analytics
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
@@ -35,9 +35,10 @@ class JsonConfiguration implements RequestFilter
             return;
         }
 
-        singleton('ea')->executeDrivers(function(Driver $driver, $id) use ($request, $session, $model) {
-            if($driver instanceof Initiates)
+        singleton('ea')->executeDrivers(function (Driver $driver, $id) use ($request, $session, $model) {
+            if ($driver instanceof Initiates) {
                 $driver->init();
+            }
 
             singleton('ea')->executeDriverAttributes(
                 function (DriverAttribute $attribute, $driver, $id) use ($request, $session, $model) {
@@ -51,7 +52,7 @@ class JsonConfiguration implements RequestFilter
 
     public function postRequest(Request $request, Response $response, DataModel $model)
     {
-        if(self::$postExecuted) {
+        if (self::$postExecuted) {
             return;
         }
 
@@ -69,12 +70,13 @@ class JsonConfiguration implements RequestFilter
         );
         $scriptsLast = [];
 
-        foreach($scripts as $key => $script) {
-            if(is_array($script)) {
-                if(isset($script['after']))
+        foreach ($scripts as $key => $script) {
+            if (is_array($script)) {
+                if (isset($script['after'])) {
                     $scriptsLast[] = $script['after'];
+                }
 
-                if(isset($script['before'])) {
+                if (isset($script['before'])) {
                     $scripts[] = $script['before'];
                 }
 
@@ -101,7 +103,7 @@ class JsonConfiguration implements RequestFilter
             $response->getBody()
         ));
 
-        if(count($scriptsLast)) {
+        if (count($scriptsLast)) {
             $placeEnd = singleton('env')->get('ExternalAnalytics.place_end', '</body>');
 
             $response->setBody(str_replace(
@@ -121,8 +123,9 @@ class JsonConfiguration implements RequestFilter
             return false;
         }
 
-        if (Director::is_cli())
+        if (Director::is_cli()) {
             return false;
+        }
 
         if (!singleton('env')->get('ExternalAnalytics.allowed_media', false) && $request->isMedia()) {
             return true;
@@ -144,9 +147,10 @@ class JsonConfiguration implements RequestFilter
         ]);
         $url = $request->getUrl(true);
 
-        foreach($disallowedUrls as $disallowedUrl) {
-            if(preg_match($disallowedUrl, $url) === 1)
+        foreach ($disallowedUrls as $disallowedUrl) {
+            if (preg_match($disallowedUrl, $url) === 1) {
                 return false;
+            }
         }
 
         if (!$response) {

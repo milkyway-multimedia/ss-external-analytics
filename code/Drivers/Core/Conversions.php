@@ -1,9 +1,10 @@
 <?php namespace Milkyway\SS\ExternalAnalytics\Drivers\Core;
+
 /**
  * Milkyway Multimedia
  * Conversions.php
  *
- * @package milkywaymultimedia.com.au
+ * @package milkyway-multimedia/ss-external-analytics
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
@@ -15,31 +16,39 @@ use SS_HTTPResponse as Response;
 use Session;
 use DataModel;
 
-class Conversions implements DriverAttribute {
-    public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel) {
+class Conversions implements DriverAttribute
+{
+    public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel)
+    {
         singleton('require')->utilities_js();
         singleton('require')->add(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/conversion-tracker.js');
 
         $conversions = (array)$driver->setting($id, 'ConversionTracking', []);
 
-        foreach($conversions as $event => $params) {
-            if(!is_array($params)) continue;
+        foreach ($conversions as $event => $params) {
+            if (!is_array($params)) {
+                continue;
+            }
 
-            foreach($params as $paramName => $vars) {
-                if(!is_array($vars)) continue;
+            foreach ($params as $paramName => $vars) {
+                if (!is_array($vars)) {
+                    continue;
+                }
 
                 // Disable a conversion if a mission session variable is found
-                if(isset($vars['check_session_var']) && !Session::get($vars['check_session_var']))
+                if (isset($vars['check_session_var']) && !Session::get($vars['check_session_var'])) {
                     unset($conversions[$event][$paramName]);
+                }
             }
         }
 
-        if(count($conversions)) {
+        if (count($conversions)) {
             singleton('ea')->configure('conversions', $conversions);
         }
     }
 
-    public function postRequest(DriverContract $driver, $id, Request $request, Response $response, DataModel $model) {
+    public function postRequest(DriverContract $driver, $id, Request $request, Response $response, DataModel $model)
+    {
         $rawConversions = singleton('ea')->unqueue('conversion');
         $conversions = [];
 
@@ -47,7 +56,8 @@ class Conversions implements DriverAttribute {
             $events[] = $options;
         }
 
-        if(count($conversions))
+        if (count($conversions)) {
             singleton('ea')->configure('conversions', $conversions);
+        }
     }
 } 

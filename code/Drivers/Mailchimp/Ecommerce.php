@@ -4,7 +4,7 @@
  * Milkyway Multimedia
  * Ecommerce.php
  *
- * @package milkywaymultimedia.com.au
+ * @package milkyway-multimedia/ss-external-analytics
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 

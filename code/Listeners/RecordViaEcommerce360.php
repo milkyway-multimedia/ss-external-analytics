@@ -1,13 +1,12 @@
-<?php
+<?php namespace Milkyway\SS\ExternalAnalytics\Listeners;
+
 /**
  * Milkyway Multimedia
- * Record.php
+ * RecordViaEcommerce360.php
  *
- * @package milkywaymultimedia.com.au
+ * @package milkyway-multimedia/ss-external-analytics
  * @author  Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
-
-namespace Milkyway\SS\ExternalAnalytics\Listeners;
 
 use League\Event\EventInterface as Event;
 use Milkyway\SS\ExternalAnalytics\Drivers\Mailchimp\Driver;

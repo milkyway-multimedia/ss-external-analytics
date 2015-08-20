@@ -1,4 +1,5 @@
 <?php namespace Milkyway\SS\ExternalAnalytics\Drivers\Contracts;
+
 /**
  * Milkyway Multimedia
  * ScriptAttribute.php
@@ -12,10 +13,11 @@ use SS_HTTPResponse as Response;
 use Session;
 use DataModel;
 
-interface DriverAttribute {
-	/** @return array|null */
-	public function preRequest(Driver $driver, $id, Request $request, Session $session, DataModel $model);
+interface DriverAttribute
+{
+    /** @return array|null */
+    public function preRequest(Driver $driver, $id, Request $request, Session $session, DataModel $model);
 
-	/** @return array|null */
-	public function postRequest(Driver $driver, $id, Request $request, Response $response, DataModel $model);
+    /** @return array|null */
+    public function postRequest(Driver $driver, $id, Request $request, Response $response, DataModel $model);
 } 

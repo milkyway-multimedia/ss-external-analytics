@@ -13,20 +13,21 @@ use ViewableData;
 
 class Driver extends AbstractDriver
 {
-	public function title($id)
-	{
-		return _t('ExternalAnalytics.' . strtoupper($id) . '_CORE', 'Core');
-	}
+    public function title($id)
+    {
+        return _t('ExternalAnalytics.' . strtoupper($id) . '_CORE', 'Core');
+    }
 
-	public function db($id)
-	{
-		return [];
-	}
+    public function db($id)
+    {
+        return [];
+    }
 
-	public function db_to_environment_mapping($id)
-	{
-		return array_merge(parent::db_to_environment_mapping($id), [
-			$this->prependId('ConversionTracking', $id) => 'Conversions_' . $id . '|ExternalAnalytics.conversion_trackers',
-		]);
-	}
+    public function db_to_environment_mapping($id)
+    {
+        return array_merge(parent::db_to_environment_mapping($id), [
+            $this->prependId('ConversionTracking',
+                $id) => 'Conversions_' . $id . '|ExternalAnalytics.conversion_trackers',
+        ]);
+    }
 } 

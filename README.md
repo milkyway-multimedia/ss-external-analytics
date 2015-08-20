@@ -128,6 +128,66 @@ You can also completely configure the EA configuration variable yourself. If you
 
 ```
 
+### Javascript usage
+Once the javascript is included in the page, you can call it directly and pass JSON configuration to the functions. Some useful ones are:
+
+#### EA.event
+
+```
+
+	EA.event({
+		eventCategory: 'buttons',
+		eventAction 'clicked'
+	});
+
+```
+
+#### EA.conversion
+
+```
+
+	EA.conversion({
+		value: 1,
+		adwords: {
+		    id: 'id here',
+		    label: 'label here'
+		},
+		facebook: {
+		   id: 'id here for facebook conversion'
+		}
+	});
+
+```
+
+#### EA.ecommerce
+EA.ecommerce contains a few different methods, including: 
+
+* impression
+* viewedProductDetails
+* choseProduct
+* addToCart
+* removeFromCart
+* currency
+* action
+* promo
+* transaction
+* refund
+
+```
+
+	EA.ecommerce.impression({
+		value: 1,
+		adwords: {
+		    id: 'id here',
+		    label: 'label here'
+		},
+		facebook: {
+		   id: 'id here for facebook conversion'
+		}
+	});
+
+```
+
 ## Limitations
 * Google Adwords does not convert server side
 

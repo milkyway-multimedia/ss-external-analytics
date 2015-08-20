@@ -5,4 +5,4 @@ Only:
 ---
 Order:
   extensions:
-    - 'Milkyway\SS\ExternalAnalytics\Modules\Userforms\RecordEcommerceTransactions'
+    - 'Milkyway\SS\ExternalAnalytics\Modules\Shop\RecordEcommerceTransactions'

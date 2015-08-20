@@ -1,9 +1,10 @@
 <?php namespace Milkyway\SS\ExternalAnalytics\Drivers\Core;
+
 /**
  * Milkyway Multimedia
  * SocialInteractions.php
  *
- * @package milkywaymultimedia.com.au
+ * @package milkyway-multimedia/ss-external-analytics
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
@@ -15,13 +16,16 @@ use SS_HTTPResponse as Response;
 use Session;
 use DataModel;
 
-class SocialInteractions implements DriverAttribute {
-    public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel) {
+class SocialInteractions implements DriverAttribute
+{
+    public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel)
+    {
         singleton('require')->utilities_js();
         singleton('require')->add(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/social-tracker.js');
     }
 
-    public function postRequest(DriverContract $driver, $id, Request $request, Response $response, DataModel $model) {
+    public function postRequest(DriverContract $driver, $id, Request $request, Response $response, DataModel $model)
+    {
 
     }
 }

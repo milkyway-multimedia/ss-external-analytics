@@ -1,15 +1,14 @@
-<?php
+<?php namespace Milkyway\SS\ExternalAnalytics\Drivers\Contracts;
+
 /**
  * Milkyway Multimedia
- * ManagesFields.php
+ * Initiates.php
  *
- * @package milkywaymultimedia.com.au
+ * @package milkyway-multimedia/ss-external-analytics
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
-namespace Milkyway\SS\ExternalAnalytics\Drivers\Contracts;
-
-
-interface Initiates {
-	public function init();
+interface Initiates
+{
+    public function init();
 }

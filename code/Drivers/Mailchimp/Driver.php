@@ -25,8 +25,8 @@ class Driver extends AbstractDriver implements ManagesFields, Initiates
     public function db($id)
     {
         return [
-            $this->prependId('UUId', $id) => 'Varchar(255)',
-            $this->prependId('StoreId', $id) => 'Varchar(255)',
+            $this->prependId('UUId', $id)      => 'Varchar(255)',
+            $this->prependId('StoreId', $id)   => 'Varchar(255)',
             $this->prependId('StoreName', $id) => 'Varchar(255)',
         ];
     }
@@ -35,14 +35,14 @@ class Driver extends AbstractDriver implements ManagesFields, Initiates
     {
         return array_merge(parent::db_to_environment_mapping($id), [
             $this->prependId('ApiKey',
-                $id) => 'Statistics_' . $id . '|ExternalAnalytics|Mailchimp|EmailCampaigns|SiteConfig.mc_api_key',
+                $id)                      => 'Statistics_' . $id . '|ExternalAnalytics|Mailchimp|EmailCampaigns|SiteConfig.mc_api_key',
             $this->prependId('StoreId',
-                $id) => 'Statistics_' . $id . '|ExternalAnalytics|Mailchimp|EmailCampaigns|SiteConfig.mc_store_id',
+                $id)                      => 'Statistics_' . $id . '|ExternalAnalytics|Mailchimp|EmailCampaigns|SiteConfig.mc_store_id',
             $this->prependId('StoreName',
-                $id) => 'Statistics_' . $id . '|ExternalAnalytics|Mailchimp|EmailCampaigns|SiteConfig.mc_store_name',
+                $id)                      => 'Statistics_' . $id . '|ExternalAnalytics|Mailchimp|EmailCampaigns|SiteConfig.mc_store_name',
             $this->prependId('UUId', $id) => 'Statistics_' . $id . '|ExternalAnalytics|Mailchimp|SiteConfig.mc_uuid',
             $this->prependId('JavascriptTemplate',
-                $id) => 'Statistics_' . $id . '|ExternalAnalytics|Mailchimp|SiteConfig.mc_javascript_template',
+                $id)                      => 'Statistics_' . $id . '|ExternalAnalytics|Mailchimp|SiteConfig.mc_javascript_template',
         ]);
     }
 

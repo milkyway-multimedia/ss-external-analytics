@@ -2,9 +2,9 @@
 
 /**
  * Milkyway Multimedia
- * Create.php
+ * Events.php
  *
- * @package milkywaymultimedia.com.au
+ * @package milkyway-multimedia/ss-external-analytics
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
  */
 
@@ -16,64 +16,75 @@ use SS_HTTPResponse as Response;
 use Session;
 use DataModel;
 
-class Events implements DriverAttribute {
-	public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel) {
-		singleton('require')->utilities_js();
-		singleton('require')->add(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/event-tracker.js');
+class Events implements DriverAttribute
+{
+    public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel)
+    {
+        singleton('require')->utilities_js();
+        singleton('require')->add(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/event-tracker.js');
 
-		$events = (array)$driver->setting($id, 'EventTracking', []);
+        $events = (array)$driver->setting($id, 'EventTracking', []);
 
-		foreach($events as $event => $params) {
-			if(!is_array($params)) continue;
+        foreach ($events as $event => $params) {
+            if (!is_array($params)) {
+                continue;
+            }
 
-			foreach($params as $paramName => $vars) {
-				if(!is_array($vars)) continue;
+            foreach ($params as $paramName => $vars) {
+                if (!is_array($vars)) {
+                    continue;
+                }
 
-				// Disable a conversion if a mission session variable is found
-				if(isset($vars['check_session_var']) && !Session::get($vars['check_session_var']))
-					unset($events[$event][$paramName]);
-			}
-		}
+                // Disable a conversion if a mission session variable is found
+                if (isset($vars['check_session_var']) && !Session::get($vars['check_session_var'])) {
+                    unset($events[$event][$paramName]);
+                }
+            }
+        }
 
-		if(count($events)) {
-			singleton('ea')->configure('events', $events);
-		}
-	}
+        if (count($events)) {
+            singleton('ea')->configure('events', $events);
+        }
+    }
 
-	public function postRequest(DriverContract $driver, $id, Request $request, Response $response, DataModel $model) {
-		$rawEvents = singleton('ea')->unqueue('event');
-		$events = [];
+    public function postRequest(DriverContract $driver, $id, Request $request, Response $response, DataModel $model)
+    {
+        $rawEvents = singleton('ea')->unqueue('event');
+        $events = [];
 
-		foreach ($rawEvents as $type => $options) {
-			$events[$type] = $this->createEvent($options, $type);
-		}
+        foreach ($rawEvents as $type => $options) {
+            $events[$type] = $this->createEvent($options, $type);
+        }
 
-		if(count($events))
-			singleton('ea')->configure('events', $events);
-	}
+        if (count($events)) {
+            singleton('ea')->configure('events', $events);
+        }
+    }
 
-	protected function createEvent($params = [], $type = 'happening')
-	{
-		$settings = ['hitType' => 'event'];
+    protected function createEvent($params = [], $type = 'happening')
+    {
+        $settings = ['hitType' => 'event'];
 
-		if (is_array($params))
-			$settings = array_merge($params, $settings);
+        if (is_array($params)) {
+            $settings = array_merge($params, $settings);
+        }
 
-		if (!isset($settings['eventCategory']))
-			$settings['eventCategory'] = isset($settings['category']) ? $settings['category'] : $type;
+        if (!isset($settings['eventCategory'])) {
+            $settings['eventCategory'] = isset($settings['category']) ? $settings['category'] : $type;
+        }
 
-		if (!isset($settings['eventAction'])) {
-			$settings['eventAction'] = isset($settings['action']) ? $settings['action'] : 'click';
-		}
+        if (!isset($settings['eventAction'])) {
+            $settings['eventAction'] = isset($settings['action']) ? $settings['action'] : 'click';
+        }
 
-		if (!isset($settings['eventLabel']) && isset($settings['label'])) {
-			$settings['eventLabel'] = $settings['label'];
-		}
+        if (!isset($settings['eventLabel']) && isset($settings['label'])) {
+            $settings['eventLabel'] = $settings['label'];
+        }
 
-		if (!isset($settings['eventValue']) && isset($settings['value'])) {
-			$settings['eventValue'] = $settings['value'];
-		}
+        if (!isset($settings['eventValue']) && isset($settings['value'])) {
+            $settings['eventValue'] = $settings['value'];
+        }
 
-		return $settings;
-	}
+        return $settings;
+    }
 }
