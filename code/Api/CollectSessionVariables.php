@@ -21,6 +21,7 @@ class CollectSessionVariables implements RequestFilter
         if (!$session->get('ea.site_start')) {
             $session->set('ea.site_start', time());
             $session->set('ea.session_started', time());
+            $session->set('ea.referrer', isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
         } else {
             $session->clear('ea.session_started');
         }

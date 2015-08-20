@@ -45,6 +45,10 @@ class AnalyticsDataField extends FormField {
 			unset($stats['pageSession']);
 		}
 
+		if($referrer = Session::get('ea.referrer')) {
+			$stats['referrer'] = DBField::create_field('Text', $referrer)->forTemplate();
+		}
+
 		$getVarsToSession = singleton('env')->get('ExternalAnalytics.get_vars_to_session');
 
 		array_walk($getVarsToSession, function($options, $sessionVar) use(&$stats) {
