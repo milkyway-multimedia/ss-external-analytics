@@ -1,0 +1,8 @@
+---
+Name: external-analytics--shop
+Only:
+  moduleexists: 'shop'
+---
+Order:
+  extensions:
+    - 'Milkyway\SS\ExternalAnalytics\Modules\Userforms\RecordEcommerceTransactions'

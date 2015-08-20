@@ -17,7 +17,7 @@ class RecordViaGoogleAnalytics extends HttpListener
 	const VERSION = 1;
 
 	/* @var string */
-	public $url = 'https://ssl.google-analytics.com/collect';
+	public $url = 'http://www.google-analytics.com/collect';
 
 	protected $mapping = [
 		'version' => 'v',
@@ -36,11 +36,13 @@ class RecordViaGoogleAnalytics extends HttpListener
 
 		'order_id' => 'ti',
 		'transaction_id' => 'ti',
+		'id' => 'ti',
 		'affiliation' => 'ta',
 		'revenue' => 'tr',
 		'shipping' => 'ts',
 		'tax' => 'tt',
 		'product' => 'in',
+		'name' => 'in',
 		'price' => 'ip',
 		'quantity' => 'iq',
 		'code' => 'ic',
@@ -59,23 +61,49 @@ class RecordViaGoogleAnalytics extends HttpListener
 		'social_target' => 'st',
 	];
 
+	protected $actionMapping = [
+		'addToCart' => 'item',
+		'removeFromCart' => 'item',
+	];
+
+	protected $enhancedActions = [
+		'item' => [
+			'view' => 'il{{i}}{{option}}',
+			'id' => 'pr{{i}}id',
+			'name' => 'pr{{i}}nm',
+			'product_category' => 'pr{{i}}ca',
+			'brand' => 'pr{{i}}br',
+			'variant' => 'pr{{i}}va',
+			'position' => 'pr{{i}}ps',
+		],
+	];
+
 	public function event(Event $e, $queueName, $params = [])
 	{
 		$results = [];
 
 		singleton('ea')->executeDrivers(function($driver, $id) use(&$results, $queueName, $params) {
-			if(isset($params['id']) && $params['id'] != $id)
+			if(isset($params['_driver']) && $params['_driver'] != $id)
 				return;
 
 			if(($driver instanceof Driver) && $tid = $driver->setting($id, 'TrackingId')) {
+				if(isset($params['action'])) {
+					if(isset($this->actionMapping[$params['action']])) {
+						$event = $this->actionMapping[$params['action']];
+					}
+					else
+						$event = $params['action'];
+				}
+				else {
+					$event = isset($params['event']) ? $params['event'] : $queueName;
+				}
+
 				foreach($params as $type => $value) {
 					if(isset($this->mapping[$type])) {
 						$params[$this->mapping[$type]] = $value;
 						unset($params[$type]);
 					}
 				}
-
-				$event = isset($params['event']) ? $params['event'] : $queueName;
 
 				$results[] = $this->request([
 					'query' => array_merge([

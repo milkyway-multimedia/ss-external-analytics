@@ -2,7 +2,7 @@
 
 /**
  * Milkyway Multimedia
- * Create.php
+ * Ecommerce.php
  *
  * @package milkywaymultimedia.com.au
  * @author Mellisa Hankins <mell@milkywaymultimedia.com.au>
