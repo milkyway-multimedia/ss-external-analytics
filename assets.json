@@ -33,6 +33,7 @@
     },
     {
       "src"  : [
+        "bower_components/assets/javascript/external-analytics/google-analytics/track.js",
         "bower_components/assets/javascript/external-analytics/google-analytics/*.js",
         "!bower_components/assets/javascript/external-analytics/google-analytics/analyticsdatafield.js"
       ],
