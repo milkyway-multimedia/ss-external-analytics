@@ -11,7 +11,6 @@
 use Milkyway\SS\ExternalAnalytics\Drivers\Contracts\Initiates;
 use Milkyway\SS\ExternalAnalytics\Drivers\Model\Driver as AbstractDriver;
 
-use Milkyway\SS\Utilities;
 use Member;
 use RandomGenerator;
 use Cookie;
@@ -35,7 +34,7 @@ class Driver extends AbstractDriver implements Initiates
             $cid = substr($cid, 0, 77);
         }
 
-        Utilities::set_cookie($var . '_cid', $cid, 730);
+        Cookie::set($var . '_cid', $cid, 730);
 
         return $cid;
     }
@@ -69,8 +68,8 @@ class Driver extends AbstractDriver implements Initiates
         if ($this->init) {
             return;
         }
-        singleton('require')->utilities_js();
+        singleton('require')->utilitiesJs();
         singleton('require')->add(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/google-analytics.js');
         $this->init = true;
     }
-} 
+}

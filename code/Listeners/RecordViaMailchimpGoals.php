@@ -63,7 +63,7 @@ class RecordViaMailchimpGoals extends HttpListener
                 $this->url = $url;
 
                 $results[] = $this->request([
-                    'body' => array_merge([
+                    'json' => array_merge([
                         'apikey'  => $apiKey,
                         'list_id' => $listId,
                     ], $params),
@@ -84,4 +84,4 @@ class RecordViaMailchimpGoals extends HttpListener
 
         return [];
     }
-} 
+}

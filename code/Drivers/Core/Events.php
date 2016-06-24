@@ -20,7 +20,7 @@ class Events implements DriverAttribute
 {
     public function preRequest(DriverContract $driver, $id, Request $request, Session $session, DataModel $dataModel)
     {
-        singleton('require')->utilities_js();
+        singleton('require')->utilitiesJs();
         singleton('require')->add(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/event-tracker.js');
 
         $events = (array)$driver->setting($id, 'EventTracking', []);

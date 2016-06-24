@@ -91,7 +91,7 @@ class Driver extends AbstractDriver implements ManagesFields, Initiates
         if ($this->init) {
             return;
         }
-        singleton('require')->utilities_js();
+        singleton('require')->utilitiesJs();
         singleton('require')->add(SS_EXTERNAL_ANALYTICS_DIR . '/javascript/mailchimp.js');
         $this->init = true;
     }

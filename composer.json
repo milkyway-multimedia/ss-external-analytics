@@ -1,8 +1,8 @@
 {
-  "name": "milkyway-multimedia/ss-external-analytics",
+  "name"       : "milkyway-multimedia/ss-external-analytics",
   "description": "Simple analytics integration into Silverstripe",
-  "type": "silverstripe-module",
-  "keywords": [
+  "type"       : "silverstripe-module",
+  "keywords"   : [
     "Google",
     "Analytics",
     "Google Analytics",
@@ -12,20 +12,24 @@
     "Ecommerce360",
     "Mailchimp Goals"
   ],
-  "license": "MIT",
-  "require": {
-    "silverstripe/framework": "~3.1",
-    "guzzlehttp/guzzle": "~4",
-    "milkyway-multimedia/ss-mwm": "dev-master",
-    "milkyway-multimedia/ss-eventful": "dev-master"
+  "license"    : "MIT",
+  "require"    : {
+    "silverstripe/framework"           : "~3.3",
+    "guzzlehttp/guzzle"                : "~6",
+    "milkyway-multimedia/ss-mwm-assets": "~0.3",
+    "milkyway-multimedia/ss-mwm-env"   : "~0.3",
+    "milkyway-multimedia/ss-eventful"  : "~0.3"
   },
-  "suggested": {
+  "suggest"    : {
     "milkyway-multimedia/ss-external-analytics-reports": "Reports for supported interfaces (Google Analytics)"
   },
-  "extra": {
-    "installer-name": "external-analytics"
+  "extra"      : {
+    "installer-name": "external-analytics",
+    "branch-alias"  : {
+      "dev-master": "0.2.x-dev"
+    }
   },
-  "config": {
+  "config"     : {
     "process-timeout": 600
   }
 }

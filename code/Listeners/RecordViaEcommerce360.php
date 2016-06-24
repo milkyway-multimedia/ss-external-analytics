@@ -69,7 +69,7 @@ class RecordViaEcommerce360 extends HttpListener
                 $this->url = $url;
 
                 $results[] = $this->request([
-                    'body' => [
+                    'json' => [
                         'apikey' => $apiKey,
                         'order'  => array_merge($paramDefaults, $params),
                     ],
@@ -81,4 +81,4 @@ class RecordViaEcommerce360 extends HttpListener
 
         return $results;
     }
-} 
+}

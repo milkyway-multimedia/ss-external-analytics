@@ -195,7 +195,7 @@ EA.ecommerce contains a few different methods, including:
 * MIT
 
 ## Version 
-* Version 0.1.2 - Alpha
+* Version 0.2 - Alpha
 
 ## Contact
 #### Milkyway Multimedia
