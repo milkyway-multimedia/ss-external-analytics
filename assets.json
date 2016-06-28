@@ -2,46 +2,46 @@
   "js" : [
     {
       "src"  : [
-        "bower_components/assets/javascript/external-analytics/conversions/*.js",
-        "bower_components/assets/javascript/external-analytics/conversions.js"
+        "node_modules/mwm.common/javascript/external-analytics/conversions/*.js",
+        "node_modules/mwm.common/javascript/external-analytics/conversions.js"
       ],
       "dest" : "javascript/conversion-tracker.js"
     },
     {
       "src"  : [
-        "bower_components/assets/javascript/external-analytics/events/social.js"
+        "node_modules/mwm.common/javascript/external-analytics/events/social.js"
       ],
       "dest" : "javascript/social-tracker.js"
     },
     {
       "src"  : [
-        "bower_components/assets/javascript/external-analytics/events.js"
+        "node_modules/mwm.common/javascript/external-analytics/events.js"
       ],
       "dest" : "javascript/event-tracker.js"
     },
     {
       "src"  : [
-        "bower_components/assets/javascript/external-analytics/ecommerce.js"
+        "node_modules/mwm.common/javascript/external-analytics/ecommerce.js"
       ],
       "dest" : "javascript/ecommerce-tracker.js"
     },
     {
       "src"  : [
-        "bower_components/assets/javascript/**/analyticsdatafield.js"
+        "node_modules/mwm.common/javascript/**/analyticsdatafield.js"
       ],
       "dest" : "javascript/analyticsdatafield.js"
     },
     {
       "src"  : [
-        "bower_components/assets/javascript/external-analytics/google-analytics/track.js",
-        "bower_components/assets/javascript/external-analytics/google-analytics/*.js",
-        "!bower_components/assets/javascript/external-analytics/google-analytics/analyticsdatafield.js"
+        "node_modules/mwm.common/javascript/external-analytics/google-analytics/track.js",
+        "node_modules/mwm.common/javascript/external-analytics/google-analytics/*.js",
+        "!node_modules/mwm.common/javascript/external-analytics/google-analytics/analyticsdatafield.js"
       ],
       "dest" : "javascript/google-analytics.js"
     },
     {
       "src"  : [
-        "bower_components/assets/javascript/external-analytics/mailchimp/*.js"
+        "node_modules/mwm.common/javascript/external-analytics/mailchimp/*.js"
       ],
       "dest" : "javascript/mailchimp.js"
     }
